@@ -1,5 +1,5 @@
 CMakeFiles/main.dir/src/TestMain.cpp.o: \
-  /usr/local/dev_projects/test_cpp_project/src/TestMain.cpp \
+  /usr/local/dev_projects/cpp_project_demo/src/TestMain.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -793,4 +793,4 @@ CMakeFiles/main.dir/src/TestMain.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/stack.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h \
-  /usr/local/dev_projects/test_cpp_project/src/random/TestRandom.h
+  /usr/local/dev_projects/cpp_project_demo/src/random/TestRandom.h

@@ -1,0 +1,56 @@
+// 配置构建任务
+// 自动化编译C++代码，替换手动输入命令
+// 与调试配置文件launch.json配合使用 实现调试前自动编译
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure",  // 生成构建系统（如 Makefile）
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", "${workspaceFolder}",  // 源码目录
+                "-B", "${workspaceFolder}/build",  // 构建目录
+                "-DCMAKE_BUILD_TYPE=Debug"  // 调试模式
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "CMake: Build",  // 编译项目
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "${workspaceFolder}/build",
+                "--config", "Debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true  // Ctrl+Shift+B 触发此任务
+            },
+            "dependsOn": ["CMake: Configure"]  // 先执行 Configure
+        },
+        {
+            "label": "CMake: Clean",  // 清理构建
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "${workspaceFolder}/build",
+                "--target", "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
+    ]
+}

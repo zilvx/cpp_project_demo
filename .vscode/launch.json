@@ -1,10 +1,14 @@
+// 调试配置文件
+// 用于在VSCode中配置C++项目的调试环境
+// 主要用于macOS系统，使用LLDB调试器
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(lldb) Debug",
+      "name": "lldb Debug",
       "type": "cppdbg",          // 调试器类型
       "request": "launch",       // 启动调试
+      "preLaunchTask": "CMake: Build",
       "program": "${workspaceFolder}/build/main",  // 可执行文件路径
       "args": [],                // 程序参数
       "stopAtEntry": false,      // 是否在入口暂停
@@ -12,7 +16,7 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",          // macOS 默认用 LLDB
-      "targetArchitecture": "x86_64", // 或 arm64（根据你的机器）
+      "targetArchitecture": "arm64", // 目标架构
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
@@ -20,6 +24,7 @@
           "ignoreFailures": true
         }
       ]
-    }
+    },
+
   ]
 }

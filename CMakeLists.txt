@@ -6,4 +6,4 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 add_executable(main
     src/random/TestRandom.cpp
     src/TestMain.cpp
-    )
+)

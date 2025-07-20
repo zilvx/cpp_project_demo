@@ -1,0 +1,23 @@
+// C和CPP的扩展配置
+{
+    "configurations": [
+        {
+            "name": "clang",
+            // 配置头文件的搜索路径，解决#include找不到的问题
+            "includePath": [
+                "${workspaceFolder}/**", //工程下的所有文件
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1"
+            ],
+            // 定义预处理器宏
+            "defines": [],
+            // 指定编译器路径
+            "compilerPath": "/usr/bin/clang++", // 或 g++
+            // 指定C和C++标准
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            // 指定编译器的智能感知模式(代码补全、 跳转定义等)
+            "intelliSenseMode": "macos-clang-arm64"
+        }
+    ],
+    "version": 4
+}
