@@ -29,6 +29,6 @@ brew install cmake
 # 工程代码
 使用CMake作为构建工具，而不是直接调用g++/clang++。
 代码如仓库中所示。
-直接点击F5进行调试即可（自动出发cmake  --build .）
+直接点击F5进行调试即可（自动触发cmake  --build .）
 
 
