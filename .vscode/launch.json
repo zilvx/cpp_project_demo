@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "(lldb) Debug",
+      "type": "cppdbg",          // 调试器类型
+      "request": "launch",       // 启动调试
+      "program": "${workspaceFolder}/build/main",  // 可执行文件路径
+      "args": [],                // 程序参数
+      "stopAtEntry": false,      // 是否在入口暂停
+      "cwd": "${workspaceFolder}", // 工作目录
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",          // macOS 默认用 LLDB
+      "targetArchitecture": "x86_64", // 或 arm64（根据你的机器）
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
