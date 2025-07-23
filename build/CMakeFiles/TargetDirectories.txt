@@ -1,3 +1,0 @@
-/usr/local/dev_projects/cpp_project_demo/build/CMakeFiles/main.dir
-/usr/local/dev_projects/cpp_project_demo/build/CMakeFiles/edit_cache.dir
-/usr/local/dev_projects/cpp_project_demo/build/CMakeFiles/rebuild_cache.dir
