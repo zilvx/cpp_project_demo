@@ -5,48 +5,60 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake: Configure",  // 生成构建系统（如 Makefile）
+            "label": "CMake: Configure", // 生成构建系统（如 Makefile）
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-S", "${workspaceFolder}",  // 源码目录
-                "-B", "${workspaceFolder}/build",  // 构建目录
-                "-DCMAKE_BUILD_TYPE=Debug"  // 调试模式
+                "-S",
+                "${workspaceFolder}", // 源码目录
+                "-B",
+                "${workspaceFolder}/build", // 构建目录
+                "-DCMAKE_BUILD_TYPE=Release" // 调试模式
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": false
             }
         },
         {
-            "label": "CMake: Build",  // 编译项目
+            "label": "CMake: Build", // 编译项目
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "${workspaceFolder}/build",
-                "--config", "Debug"
+                "--build",
+                "${workspaceFolder}/build",
+                "--config",
+                "Debug"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "group": {
                 "kind": "build",
-                "isDefault": true  // Ctrl+Shift+B 触发此任务
+                "isDefault": true // Ctrl+Shift+B 触发此任务
             },
-            "dependsOn": ["CMake: Configure"]  // 先执行 Configure
+            "dependsOn": [
+                "CMake: Configure"
+            ] // 先执行 Configure
         },
         {
-            "label": "CMake: Clean",  // 清理构建
+            "label": "CMake: Clean", // 清理构建
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "${workspaceFolder}/build",
-                "--target", "clean"
+                "--build",
+                "${workspaceFolder}/build",
+                "--target",
+                "clean"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

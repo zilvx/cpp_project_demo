@@ -1,25 +1,26 @@
 #include <iostream>
-// #include <spdlog/spdlog.h>
+#include <spdlog/spdlog.h>
 #include "random/TestRandom.h"
 #include "leetcode/LongestPalindrome/LongestPalindrome.h"
+#include "spdlog/logutil.h"
 
 int main() {
-    // spdlog::info("Hello, VSCode C++ on macOS!");
-    std::cout << "Hello, VSCode C++ on macOS!" << std::endl;
+    LogUtil::init();
+    spdlog::info("Hello, VSCode C++ on macOS!");
 
-#ifdef UNUSED
+// #ifdef UNUSED
     initRandomNumByCStyle();
     initRandomNumByCpp("int");
-    initRandomNumByCpp("real");
+    initRandomNumByCpp("real"); 
     initRandomNumByCpp("normal");
-
-#else
+    spdlog::info("Random number generation tests completed.");
+// #else
     LongestPalindrome lp;
     std::string testStr = "babad";
     std::string longestPalin = lp.longestPalindrome(testStr);
-    std::cout << "Longest Palindrome in '" << testStr << "' is: '" << longestPalin << "'" << std::endl;
-#endif
-
+    spdlog::info("Longest Palindrome in '{}' is: '{}'", testStr, longestPalin);
+// #endif
+    LogUtil::shutdown();
     return 0;
 }
 
