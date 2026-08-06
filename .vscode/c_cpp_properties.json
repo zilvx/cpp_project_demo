@@ -7,12 +7,13 @@
                 "${workspaceFolder}/**",
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1",
                 "${workspaceFolder}/build/**",
-                "/Users/shenxing/.conan2/p/b/spdlod088fc4958332/p/include",
-                "/Users/shenxing/.conan2/p/b/fmt634453917241d/p/include",
                 "/opt/homebrew/opt/qt/include",
                 "/opt/homebrew/opt/qt/lib/QtCore.framework/Headers",
                 "/opt/homebrew/opt/qt/lib/QtGui.framework/Headers",
-                "/opt/homebrew/opt/qt/lib/QtWidgets.framework/Headers"
+                "/opt/homebrew/opt/qt/lib/QtWidgets.framework/Headers",
+                "/opt/homebrew/opt/qt/lib/QtNetwork.framework/Headers",
+                "/opt/homebrew/opt/protobuf/include",
+                "/opt/homebrew/opt/abseil/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang++",

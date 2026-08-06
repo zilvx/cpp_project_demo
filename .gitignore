@@ -60,6 +60,13 @@ graph_info.json
 CMakeUserPresets.json     # Conan 自动生成，每次 install 可能变化
 
 # ==============
+# Protobuf 生成文件
+# ==============
+*.pb
+*.pb.h
+*.pb.cc
+
+# ==============
 # 其他通用忽略
 # ==============
 # 临时文件

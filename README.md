@@ -30,6 +30,10 @@ brew install conan
 brew install qt
 brew install qt-creator  # 可选: Qt IDE
 ```
+
+8. 通过 Homebrew 安装 Protobuf（可选，仅 Proto 数据源需要）：
+```bash
+brew install protobuf
  
 7. 安装VSCode 并下载插件
  - C/C++ (Microsoft)
@@ -96,7 +100,7 @@ include(${CMAKE_BINARY_DIR}/Release/generators/conan_toolchain.cmake)
 ```cmake
 # 确保 CMake 能找到 Homebrew 安装的 Qt6
 list(PREPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt")
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
 
 # AUTOMOC/AUTORCC/AUTOUIC 只对 Qt 目标启用
 set_target_properties(qt_table_app PROPERTIES
@@ -113,31 +117,32 @@ set_target_properties(qt_table_app PROPERTIES
 样式表独立存放在 `.qss` 文件中，通过 Qt Resource System (`.qrc`) 编译嵌入可执行文件：
 
 ```
-src/qt_widget/
-├── style.qss          # 样式表文件（深色主题）
-├── resources.qrc      # 资源索引文件
-├── TableWidget.h/cpp  # 组件代码
-└── main_qt.cpp        # 应用入口
+src/ui/styles/
+├── table.qss             # 表格深色主题
+├── keyboard_style.qss    # 键帽立体感样式
+└── scrollbar_style.qss   # 滚动条深色风格
 ```
 
 `resources.qrc` 内容：
 ```xml
 <RCC>
     <qresource prefix="/">
-        <file alias="style.qss">style.qss</file>
+        <file alias="table.qss">styles/table.qss</file>
+        <file alias="keyboard_style.qss">styles/keyboard_style.qss</file>
+        <file alias="scrollbar_style.qss">styles/scrollbar_style.qss</file>
     </qresource>
 </RCC>
 ```
 
-C++ 中加载：
+C++ 中加载（以表格样式为例）：
 ```cpp
-QFile styleFile(":/style.qss");
+QFile styleFile(":/table.qss");
 if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
     m_table->setStyleSheet(QString::fromUtf8(styleFile.readAll()));
 }
 ```
 
-修改样式时只需编辑 `style.qss`，无需改动 C++ 代码。
+修改样式时只需编辑对应的 `.qss` 文件，无需改动 C++ 代码。
 
 
 # 问题排查记录
@@ -294,7 +299,7 @@ m_table->setSortingEnabled(true);   // 数据填充完毕后再启用排序
 
 **原因**: QTableWidget 左上角是一个 `QTableCornerButton`，默认使用系统原生样式（亮色），不会自动继承 HeaderView 的 QSS。
 
-**解决**: 在 `style.qss` 中单独设置 CornerButton 样式：
+**解决**: 在 `table.qss` 中单独设置 CornerButton 样式：
 
 ```css
 QTableCornerButton::section {
@@ -313,9 +318,10 @@ QTableCornerButton::section {
 **实现**: 创建 `ScrollBarStyler` 工具类，通过 QSS 控制 `QScrollBar` 的每个子控件：
 
 ```
-src/qt_widget/
+src/ui/core/
 ├── ScrollBar.h      ← 接口：ScrollBarStyler::applyTo(QAbstractScrollArea *)
 ├── ScrollBar.cpp    ← 垂直/水平滚动条全套 QSS
+src/ui/widgets/
 └── TableWidget.cpp  ← 一行调用：ScrollBarStyler::applyTo(m_table)
 ```
 
@@ -349,10 +355,8 @@ QScrollBar::add-line:vertical, .sub-line:vertical { height: 0; }  /* 隐藏箭�
 **解决方案**: 创建 `PenIconDelegate`，继承 `QStyledItemDelegate`，重写 `paint()` 在右下角绘制：
 
 ```
-src/qt_widget/
-├── PenIconDelegate.h    ← QStyledItemDelegate 子类声明
-├── PenIconDelegate.cpp  ← 绘制逻辑
-└── TableWidget.cpp      ← m_table->setItemDelegate(new PenIconDelegate(m_table))
+src/ui/core/    ← PenIconDelegate.h/.cpp
+src/ui/widgets/ ← TableWidget.cpp
 ```
 
 **实现原理**:
@@ -390,10 +394,8 @@ if (col == kDeptCol) {
 **实现**:
 
 ```
-src/qt_widget/
-├── VirtualKeyboard.h      ← QWidget 子类，信号 keyPressed(QString)
-├── VirtualKeyboard.cpp    ← 数据驱动 6 行键位布局
-└── keyboard_style.qss     ← 键帽样式（深色立体感）
+src/ui/widgets/ ← VirtualKeyboard.h/.cpp
+src/ui/styles/  ← keyboard_style.qss
 ```
 
 **设计要点**:
@@ -506,11 +508,8 @@ if (item && item->text().isEmpty()) {
 **实现**:
 
 ```
-src/qt_widget/
-├── core/
-│   └── WaveformData.h/cpp       ← 波形数据模型（CSV 加载 + 数学波形生成）
-└── widgets/
-    └── WaveformChart.h/cpp      ← 示波器风格绘制（网格 + 平滑曲线 + 坐标轴）
+src/ui/core/WaveformData.*      ← 波形数据模型
+src/ui/widgets/WaveformChart.*  ← 示波器风格绘制
 ```
 
 **WaveformData — 数据层**:
@@ -584,12 +583,12 @@ void drawMarker(QPainter &p, const QRect &chartRect);
 
 ## 14. 目录结构重组 — widgets / core / styles
 
-**需求**: `src/qt_widget/` 下 14 个文件平铺，缺乏层次感。按文件类型分为三层。
+**需求**: `src/ui/` 下 14 个文件平铺，缺乏层次感。按文件类型分为三层。
 
 **最终结构**:
 
 ```
-src/qt_widget/
+src/ui/
 ├── main_qt.cpp                # 应用入口（QTabWidget: 表格 + 波形）
 ├── resources.qrc              # Qt 资源索引
 │
@@ -662,7 +661,7 @@ include(${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake
 **为什么优化**: 根 CMakeLists.txt 中存在三行全局 `include_directories`：
 
 ```cmake
-include_directories(${PROJECT_SOURCE_DIR}/src/spdlog)
+include_directories(${PROJECT_SOURCE_DIR}/src/utils/logging)
 include_directories(${PROJECT_SOURCE_DIR}/src/random)
 include_directories(${PROJECT_SOURCE_DIR}/src/leetcode)
 ```
@@ -680,7 +679,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src/leetcode)
 
 **如何优化**:
 
-1. 创建 `src/qt_widget/scrollbar_style.qss`，移入全部滚动条 QSS
+1. 创建 `src/ui/scrollbar_style.qss`，移入全部滚动条 QSS
 2. `resources.qrc` 注册 `scrollbar_style.qss`
 3. `ScrollBar.cpp` 改为运行时从 `:/scrollbar_style.qss` 加载：
 
@@ -1037,46 +1036,112 @@ CMakeUserPresets.json     # Conan 自动生成
 
 | 目标 | 说明 | 运行方式 |
 |---|---|---|
-| `main` | 控制台程序 (spdlog + leetcode) | `./build/main` |
-| `qt_table_app` | Qt 应用（表格 + 键盘 + 波形示波器 + 标记器） | `open build/qt_table_app.app` |
+| `main` | 控制台测试程序 (spdlog + examples) | `./build/main` |
+| `qt_table_app` | Qt 应用（表格 + 键盘 + 波形示波器） | `open build/qt_table_app.app` |
+| `table_data_server` | HTTP 后端服务（JSON + Protobuf） | `./build/table_data_server [端口号]` |
 
 # 项目结构
 
 ```
 .
-├── CMakeLists.txt              # 根 CMake 配置
-├── conanfile.txt               # Conan 依赖声明 (spdlog)
+├── CMakeLists.txt
+├── main.cpp                        # 控制台测试入口（examples/ 下代码的验证）
+├── conanfile.txt
 ├── src/
-│   ├── main.cpp                # 控制台程序入口
-│   ├── spdlog/logutil.*        # 日志工具封装
-│   ├── random/                 # 随机数示例
-│   ├── leetcode/
-│   │   ├── LongestPalindrome/  # 最长回文子串
-│   │   └── SumOfTwoNum/        # 两数之和
-│   └── qt_widget/
-│       ├── main_qt.cpp              # Qt 应用入口（QTabWidget 双标签页）
-│       ├── resources.qrc            # Qt 资源索引
-│       ├── widgets/                 # 视觉组件
-│       │   ├── TableWidget.*        #   人员信息表
-│       │   ├── VirtualKeyboard.*    #   98 键虚拟键盘
-│       │   └── WaveformChart.*      #   波形示波器
-│       ├── core/                    # 工具/逻辑组件
-│       │   ├── EditController.*     #   编辑状态机
-│       │   ├── ScrollBar.*          #   滚动条样式管理
-│       │   ├── PenIconDelegate.*    #   钢笔图标委托
-│       │   └── WaveformData.*       #   波形数据模型
-│       └── styles/                  # QSS 样式表
-│           ├── table.qss            #   表格深色主题
-│           ├── keyboard_style.qss   #   键帽立体感样式
-│           └── scrollbar_style.qss  #   滚动条深色风格
+│   ├── bs/                          # 业务后端
+│   │   ├── main_bs.cpp              #   服务入口
+│   │   ├── TableDataServer.h        #   轻量级 HTTP 服务器 (QTcpServer)
+│   │   └── TableDataServer.cpp
+│   └── ui/                          # Qt 前端
+│       ├── main_ui.cpp              #   应用入口 (QTabWidget)
+│       ├── resources.qrc
+│       ├── providers/               #   数据提供者 (IDataProvider 抽象 + 多实现)
+│       │   ├── IDataProvider.h/.cpp
+│       │   ├── SampleDataProvider.h/.cpp    # 本地样本数据
+│       │   ├── HttpDataProvider.h/.cpp      # HTTP JSON 数据
+│       │   └── HttpProtoDataProvider.h/.cpp # HTTP Protobuf 数据
+│       ├── core/                    #   工具/逻辑组件
+│       │   ├── TableData.h          #     表格数据结构 + fromProto()
+│       │   ├── EditController.h/.cpp
+│       │   ├── ScrollBar.h/.cpp
+│       │   ├── PenIconDelegate.h/.cpp
+│       │   └── WaveformData.h/.cpp
+│       ├── widgets/                 #   视觉组件
+│       │   ├── TableWidget.h/.cpp
+│       │   ├── VirtualKeyboard.h/.cpp
+│       │   └── WaveformChart.h/.cpp
+│       └── styles/                  #   QSS 样式
+│           ├── table.qss
+│           ├── keyboard_style.qss
+│           └── scrollbar_style.qss
+├── src/utils/
+│   ├── logging/                     # 日志工具封装 (spdlog wrapper)
+│   │   ├── CMakeLists.txt
+│   │   ├── logutil.h
+│   │   └── logutil.cpp
+│   └── proto/                       # Protobuf schema
+│       └── table_data.proto
+├── examples/                        # 学习/测试代码
+│   ├── random/
+│   └── leetcode/
 ├── data/
-│   └── arbitrary_wave.csv           # 自定义波形坐标点示例
+│   └── arbitrary_wave.csv
 ├── stub_frameworks/
-│   └── AGL.framework/          # AGL 桩框架 (macOS 26 兼容)
-├── logs/                       # 日志输出目录
+│   └── AGL.framework/
 └── .vscode/
-    ├── c_cpp_properties.json   # IntelliSense 配置
-    ├── settings.json           # Code Runner 等设置
-    ├── launch.json             # F5 调试配置
-    └── tasks.json              # CMake 构建任务
 ```
+
+## 条件编译：数据源切换
+
+CMake option 在编译期选择 TableWidget 数据源（三选一，互斥）：
+
+```bash
+# 默认：本地样本数据 (SampleDataProvider)
+cmake -S . -B build
+
+# HTTP JSON 模式 (HttpDataProvider → /api/table)
+cmake -S . -B build -DUSE_HTTP_DATA=ON
+
+# HTTP Protobuf 模式 (HttpProtoDataProvider → /api/table/proto)
+# 需要先 brew install protobuf
+cmake -S . -B build -DUSE_PROTO_DATA=ON
+```
+
+## HTTP 后端服务 (table_data_server)
+
+基于 QTcpServer 的轻量级 HTTP 服务，零外部依赖。使用 `Qt6::Network` 模块。
+
+| 端点 | 说明 |
+|------|------|
+| `GET /api/table` | 返回 JSON 表格数据 |
+| `GET /api/table/proto` | 返回 Protobuf 二进制数据（需 `USE_PROTO_DATA=ON`） |
+| `GET /health` | 健康检查 |
+
+运行：
+```bash
+./build/table_data_server           # 默认 8080
+./build/table_data_server 9090      # 自定义端口
+```
+
+## Protobuf 数据源
+
+通过 Homebrew 安装：
+```bash
+brew install protobuf
+```
+
+`USE_PROTO_DATA=ON` 时：
+- 后端 `table_data_server` 新增 `/api/table/proto` 端点（Protobuf 序列化）
+- 前端 `HttpProtoDataProvider` 通过 HTTP 获取 Protobuf 二进制并解析为 TableData
+- `TableData::fromProto()` 统一转换逻辑，消除重复
+
+## 数据提供者架构
+
+```
+IDataProvider (抽象接口)
+    ├── SampleDataProvider      ← 本地硬编码样本数据（默认）
+    ├── HttpDataProvider        ← HTTP GET /api/table（JSON）
+    └── HttpProtoDataProvider   ← HTTP GET /api/table/proto（Protobuf）
+```
+
+所有 provider 通过 `fetchData()` 触发异步获取，完成后发射 `dataReady(TableData)` 信号，TableWidget 通过 `loadData()` 接收并渲染。
