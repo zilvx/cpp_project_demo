@@ -499,6 +499,125 @@ if (item && item->text().isEmpty()) {
 ```
 
 
+## 12. 示波器风格波形图表组件
+
+**需求**: 设计一个直方图组件，具备精细刻度网格，用于呈现正弦波、方波、锯齿波以及 CSV 导入的任意波形。
+
+**实现**:
+
+```
+src/qt_widget/
+├── core/
+│   └── WaveformData.h/cpp       ← 波形数据模型（CSV 加载 + 数学波形生成）
+└── widgets/
+    └── WaveformChart.h/cpp      ← 示波器风格绘制（网格 + 平滑曲线 + 坐标轴）
+```
+
+**WaveformData — 数据层**:
+
+| 数据源 | 方法 | 说明 |
+|---|---|---|
+| CSV 文件 | `loadCSV(path)` | 两列格式 `时间,幅值`，支持 `#` 注释行 |
+| 正弦波 | `generateSine(freq, amp, sr, cycles)` | `y = A·sin(2πft)` |
+| 方波 | `generateSquare(freq, amp, sr, cycles, riseRatio)` | 含渐进上升/下降沿，`riseRatio=0.02` |
+| 锯齿波 | `generateSawtooth(freq, amp, sr, cycles)` | 线性上升，周期复位 |
+
+**WaveformChart — 绘制层**:
+
+| 特性 | 实现 |
+|---|---|
+| 背景 | 深色示波器风格 (#1a1d2e) |
+| 网格 | Nice Numbers 算法自动计算最佳主/次刻度间距，多级透明度 |
+| 曲线 | Catmull-Rom 样条 → Cubic Bezier 转换，张力 0.5，精确通过所有数据点 |
+| 坐标轴 | 自动刻度标签 + 轴标题 |
+| 颜色 | 青色发光波形线 (#00D2D2)，半透明白色网格 |
+
+**平滑曲线算法** — Catmull-Rom → Bezier:
+
+给定 4 个连续锚点 P0, P1, P2, P3，P1→P2 段的 Bezier 控制点为:
+
+```
+CP1 = P1 + (P2 - P0) × tension / 3
+CP2 = P2 - (P3 - P1) × tension / 3
+```
+
+端点使用反射虚拟控制点保证首尾段也有平滑曲率。
+
+**波形生成示例**:
+
+```cpp
+WaveformData data;
+data.generateSine(1.0, 2.5, 500.0, 3);     // 1Hz, 2.5V, 500采样点/秒, 3个周期
+data.generateSquare(2.0, 1.5, 500.0, 2);    // 2Hz 方波
+data.loadCSV("data/arbitrary_wave.csv");     // Excel 导出的自定义波形
+```
+
+
+## 13. 波形标记器 — 滑动三角形 + 实时坐标
+
+**需求**: 在波形曲线上增加一个可鼠标拖动的三角形标记，滑动过程中右侧始终显示当前坐标值。
+
+**实现**:
+
+| 特性 | 说明 |
+|---|---|
+| 交互 | 点击图表区域 → 三角形出现 → 拖动鼠标沿曲线滑动 → 释放后标记保持 |
+| X 定位 | 鼠标 X 像素 → `pixelToData()` → 数据空间 X 值 |
+| Y 插值 | 给定 X，二分查找最近两个数据点 → 线性插值得到精确 Y |
+| 三角形 | 金色 (#FFB41E)，发光阴影，顶点精确指向曲线上的数据位置 |
+| 坐标标签 | 深色圆角背景 + 金色边框 + 等宽字体，格式 `(2.514, 1.237)` |
+| 约束 | X 限制在数据范围内，Y 跟随曲线 |
+
+**关键方法**:
+
+```cpp
+// 像素 → 数据坐标（与 dataToPixel 互逆）
+QPointF pixelToData(const QPointF &pixel, const QRect &chartRect) const;
+
+// 二分查找 + 线性插值
+double interpolateY(double dataX) const;
+
+// 绘制三角形 + 坐标标签
+void drawMarker(QPainter &p, const QRect &chartRect);
+```
+
+
+## 14. 目录结构重组 — widgets / core / styles
+
+**需求**: `src/qt_widget/` 下 14 个文件平铺，缺乏层次感。按文件类型分为三层。
+
+**最终结构**:
+
+```
+src/qt_widget/
+├── main_qt.cpp                # 应用入口（QTabWidget: 表格 + 波形）
+├── resources.qrc              # Qt 资源索引
+│
+├── widgets/                   # 视觉组件 (QWidget 子类)
+│   ├── TableWidget.h/cpp      #   人员信息表
+│   ├── VirtualKeyboard.h/cpp  #   98 键虚拟键盘
+│   └── WaveformChart.h/cpp    #   波形示波器
+│
+├── core/                      # 工具/逻辑组件 (无界面)
+│   ├── EditController.h/cpp   #   编辑状态机
+│   ├── ScrollBar.h/cpp        #   滚动条样式
+│   ├── PenIconDelegate.h/cpp  #   钢笔图标委托
+│   └── WaveformData.h/cpp     #   波形数据模型
+│
+└── styles/                    # QSS 样式表
+    ├── table.qss              #   表格深色主题
+    ├── keyboard_style.qss     #   键帽立体感样式
+    └── scrollbar_style.qss    #   滚动条深色风格
+```
+
+**分层规则**:
+- `widgets/` — 有视觉界面的 QWidget 子类，可直接实例化使用
+- `core/` — 无界面的工具/逻辑类，可被多个 widget 复用
+- `styles/` — 纯 QSS 文件，UI 调整时只需改此目录
+
+**同步修改**: CMakeLists.txt 源文件路径、resources.qrc 引用路径、所有 `#include` 路径。
+
+
 # 代码架构优化
 
 对项目进行系统性代码审查后，按优先级分四类进行了优化。以下记录每项优化的**动机（为什么）**与**方案（怎么做）**。
@@ -779,6 +898,139 @@ target_link_libraries(random_lib PUBLIC spdlog::spdlog)
 target_link_libraries(random_lib PRIVATE spdlog::spdlog)
 ```
 
+
+## 第二轮 — WaveformChart 代码审查优化
+
+对新增的波形图表组件进行代码审查后，发现 6 个可优化点，按 P0-P2 优先级处理。
+
+### 14. 标记隐藏判断 `m_markerX < 0` 不可靠
+
+**为什么优化**: 标记的"隐藏"状态通过 `m_markerX < 0` 判定。如果波形数据的 X 轴从负值开始（如 `-5.0 ~ 5.0`），标记即使在有效范围内也会被误判隐藏。
+
+```cpp
+// ❌ 问题：数据从 -1.0 开始时，m_markerX 合法值为负，但被误判隐藏
+if (m_markerX < 0 || m_data.isEmpty()) return;
+```
+
+**如何优化**: 用显式的 `bool m_markerVisible` 替代 sentinel 值：
+
+```cpp
+// ✅ 之后
+bool m_markerVisible = false;
+
+void drawMarker(...) {
+    if (!m_markerVisible || m_data.isEmpty()) return;  // 显式判断
+}
+```
+
+### 15. 坐标标签右边界溢出
+
+**为什么优化**: 当标记拖到图表右边缘时，坐标标签按固定偏移放在右侧，会绘制到图表区域外，部分内容不可见。
+
+**如何优化**: 检测右边界溢出后，将标签翻转到标记**左侧**显示：
+
+```cpp
+const bool overflowRight = (px.x() + kTriHalfW + 6 + textW > r.right());
+const int labelX = overflowRight
+    ? static_cast<int>(px.x()) - kTriHalfW - 6 - textW   // 翻转到左侧
+    : static_cast<int>(px.x()) + kTriHalfW + 6;           // 默认右侧
+```
+
+### 16. `niceStep()` 算法重复定义
+
+**为什么优化**: Nice Numbers（最佳刻度间距）算法在 `drawGrid()` 和 `drawAxisLabels()` 中各有一份完全相同的 lambda 实现。重复代码 = 双重维护风险。
+
+**如何优化**: 提取为类的静态方法，两处调用共享同一实现：
+
+```cpp
+// ✅ 头文件声明
+static double niceStep(double span, int targetDivs);
+
+// ✅ .cpp 中单一定义，drawGrid 和 drawAxisLabels 共用
+const double xMajorStep = niceStep(tRange.span(), 10);
+const double yMajorStep = niceStep(aRange.span(), 8);
+```
+
+### 17. `chartRect` 计算在 3 处重复
+
+**为什么优化**: `paintEvent`、`mousePressEvent`、`mouseMoveEvent` 中各有一份相同的 chartRect 计算（6 行），违反 DRY 原则。
+
+**如何优化**: 提取为内联方法：
+
+```cpp
+QRect WaveformChart::chartRect() const {
+    return QRect(kMarginLeft, kMarginTop,
+                 width()  - kMarginLeft - kMarginRight,
+                 height() - kMarginTop  - kMarginBottom);
+}
+```
+
+所有调用处简化为 `const QRect cr = chartRect();`。
+
+### 18. QFont 每帧重复创建
+
+**为什么优化**: `drawAxisLabels()` 和 `drawMarker()` 在每次 `paintEvent` 中都用 `QFont("Monospace", 9)` 创建新字体对象。高频渲染场景下（鼠标拖动标记每秒触发数十次 repaint），不必要的内存分配累积。
+
+**如何优化**: 在构造函数中初始化，成员中缓存复用：
+
+```cpp
+// 构造函数中
+m_axisFont  = QFont(QStringLiteral("Monospace"), 9);
+m_titleFont = QFont(QStringLiteral("Monospace"), 12, QFont::Bold);
+m_labelFont = QFont(QStringLiteral("Monospace"), 10, QFont::Bold);
+
+// paintEvent 中直接使用
+p.setFont(m_axisFont);  // 无需每帧创建
+```
+
+### 19. 颜色值散布代码各处
+
+**为什么优化**: WaveformChart 中有 16 个颜色魔数分散在 5 个方法中：
+
+```cpp
+// ❌ 散布各处的魔数
+QColor(255, 255, 255, 25)   // 次网格线 (drawGrid)
+QColor(255, 255, 255, 50)   // 主网格线 (drawGrid)
+QColor(0x1a, 0x1d, 0x2e)      // 背景     (drawBackground)
+QColor(0, 210, 210, 180)      // 波形线   (drawCurve)
+QColor(255, 180, 30, 240)    // 标记三角形 (drawMarker)
+// ... 共 16 个
+```
+
+调整主题色时需要逐个定位修改，容易漏改。
+
+**如何优化**: 提取为 `static constexpr` 命名常量，集中定义在头文件中：
+
+```cpp
+// 主题颜色常量集中管理
+static constexpr int kBgR = 0x1a, kBgG = 0x1d, kBgB = 0x2e;
+static constexpr int kWaveR = 0, kWaveG = 210, kWaveB = 210, kWaveAlpha = 180;
+static constexpr int kGridMinorAlpha = 25, kGridMajorAlpha = 50;
+static constexpr int kMarkerR = 255, kMarkerG = 180, kMarkerB = 30;
+// ... 共 20 个常量，换主题只需改这一块
+```
+
+### 20. `CMakeUserPresets.json` 纳入 .gitignore
+
+**为什么优化**: 该文件由 Conan 的 `cmake_layout` 自动生成，包含本地构建类型路径（`build/Release/generators/CMakePresets.json`）。已提交到版本控制后，每次 `conan install` 可能产生差异，且其他开发者路径不同会导致不必要的 diff。
+
+**如何优化**: 添加到 `.gitignore` 并从 git 跟踪中移除：
+
+```gitignore
+CMakeUserPresets.json     # Conan 自动生成
+```
+
+### 本轮效果
+
+| 指标 | 优化前 | 优化后 |
+|---|---|---|
+| WaveformChart.cpp 行数 | 413 | 380 (-33) |
+| 重复函数定义 | 2 处 niceStep | 1 处 |
+| 重复 chartRect | 3 处 | 1 处 `chartRect()` |
+| 颜色魔数 | 16 个散落 | 20 个常量集中 |
+| 标记隐藏判断 | m_markerX < 0 | m_markerVisible |
+| 标签溢出处理 | 无 | 左右自适应翻转 |
+
 ---
 
 # 构建目标
@@ -786,7 +1038,7 @@ target_link_libraries(random_lib PRIVATE spdlog::spdlog)
 | 目标 | 说明 | 运行方式 |
 |---|---|---|
 | `main` | 控制台程序 (spdlog + leetcode) | `./build/main` |
-| `qt_table_app` | Qt 表格窗口 (5行6列深色主题) | `open build/qt_table_app.app` |
+| `qt_table_app` | Qt 应用（表格 + 键盘 + 波形示波器 + 标记器） | `open build/qt_table_app.app` |
 
 # 项目结构
 
@@ -802,16 +1054,23 @@ target_link_libraries(random_lib PRIVATE spdlog::spdlog)
 │   │   ├── LongestPalindrome/  # 最长回文子串
 │   │   └── SumOfTwoNum/        # 两数之和
 │   └── qt_widget/
-│       ├── style.qss            # 表格深色主题样式
-│       ├── keyboard_style.qss   # 键盘键帽样式
-│       ├── scrollbar_style.qss  # 滚动条深色主题样式
-│       ├── resources.qrc        # Qt 资源索引
-│       ├── TableWidget.*        # 表格组件（20行×6列）
-│       ├── ScrollBar.*          # 滚动条样式组件
-│       ├── PenIconDelegate.*    # 钢笔图标绘制委托
-│       ├── VirtualKeyboard.*    # 98键虚拟键盘组件
-│       ├── EditController.*     # 编辑状态机控制器
-│       └── main_qt.cpp          # Qt 应用入口
+│       ├── main_qt.cpp              # Qt 应用入口（QTabWidget 双标签页）
+│       ├── resources.qrc            # Qt 资源索引
+│       ├── widgets/                 # 视觉组件
+│       │   ├── TableWidget.*        #   人员信息表
+│       │   ├── VirtualKeyboard.*    #   98 键虚拟键盘
+│       │   └── WaveformChart.*      #   波形示波器
+│       ├── core/                    # 工具/逻辑组件
+│       │   ├── EditController.*     #   编辑状态机
+│       │   ├── ScrollBar.*          #   滚动条样式管理
+│       │   ├── PenIconDelegate.*    #   钢笔图标委托
+│       │   └── WaveformData.*       #   波形数据模型
+│       └── styles/                  # QSS 样式表
+│           ├── table.qss            #   表格深色主题
+│           ├── keyboard_style.qss   #   键帽立体感样式
+│           └── scrollbar_style.qss  #   滚动条深色风格
+├── data/
+│   └── arbitrary_wave.csv           # 自定义波形坐标点示例
 ├── stub_frameworks/
 │   └── AGL.framework/          # AGL 桩框架 (macOS 26 兼容)
 ├── logs/                       # 日志输出目录

@@ -1,7 +1,7 @@
 #include "TableWidget.h"
-#include "ScrollBar.h"
-#include "PenIconDelegate.h"
-#include "EditController.h"
+#include "../core/ScrollBar.h"
+#include "../core/PenIconDelegate.h"
+#include "../core/EditController.h"
 
 #include <QApplication>
 #include <QFile>
@@ -22,12 +22,12 @@ void TableWidget::setupUI(int rows, int cols) {
     m_table = new QTableWidget(rows, cols, this);
 
     // 从 Qt 资源文件加载表格样式表
-    QFile styleFile(QStringLiteral(":/style.qss"));
+    QFile styleFile(QStringLiteral(":/table.qss"));
     if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
         m_table->setStyleSheet(QString::fromUtf8(styleFile.readAll()));
         styleFile.close();
     } else {
-        qWarning("TableWidget: failed to load :/style.qss");
+        qWarning("TableWidget: failed to load :/table.qss");
     }
 
     // 应用滚动条样式（独立于表格样式的 ScrollBar 组件）

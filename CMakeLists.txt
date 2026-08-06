@@ -35,11 +35,13 @@ target_link_libraries(main PRIVATE
 # Qt 表格应用程序
 add_executable(qt_table_app
     src/qt_widget/main_qt.cpp
-    src/qt_widget/TableWidget.cpp
-    src/qt_widget/ScrollBar.cpp
-    src/qt_widget/PenIconDelegate.cpp
-    src/qt_widget/VirtualKeyboard.cpp
-    src/qt_widget/EditController.cpp
+    src/qt_widget/widgets/TableWidget.cpp
+    src/qt_widget/widgets/VirtualKeyboard.cpp
+    src/qt_widget/core/ScrollBar.cpp
+    src/qt_widget/core/PenIconDelegate.cpp
+    src/qt_widget/core/EditController.cpp
+    src/qt_widget/core/WaveformData.cpp
+    src/qt_widget/widgets/WaveformChart.cpp
     src/qt_widget/resources.qrc
 )
 target_link_libraries(qt_table_app PRIVATE Qt6::Widgets)
