@@ -1,6 +1,12 @@
 {
     "files.autoSave": "onFocusChange",
     "editor.formatOnSave": true,
+    "code-runner.executorMap": {
+        "cpp": "cd $workspaceRoot && cmake --build build && clear && $workspaceRoot/build/main"
+    },
+    "code-runner.runInTerminal": true,
+    "code-runner.saveFileBeforeRun": true,
+    "code-runner.preserveFocus": false,
     "files.associations": {
         "cstdlib": "cpp",
         "iostream": "cpp",

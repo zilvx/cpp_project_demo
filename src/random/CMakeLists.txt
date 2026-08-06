@@ -6,7 +6,7 @@ set_target_properties(random_lib PROPERTIES
     PUBLIC_HEADER TestRandom.h
 )
 
-target_link_libraries(random_lib PUBLIC
+target_link_libraries(random_lib PRIVATE
     spdlog::spdlog
 )
 

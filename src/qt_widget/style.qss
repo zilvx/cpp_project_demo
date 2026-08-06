@@ -1,0 +1,43 @@
+/* ============================================
+   人员信息表 — 深色主题样式
+   ============================================ */
+
+/* --- 表格主体 --- */
+QTableWidget {
+    background-color: #323649;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+    border: none;
+    gridline-color: rgba(255, 255, 255, 0.05);
+    outline: none;
+}
+
+/* --- 表头区域 --- */
+QHeaderView {
+    background-color: #181c34;
+}
+
+QHeaderView::section {
+    background-color: #181c34;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 4px;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- 选中行 --- */
+QTableWidget::item:selected {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- 左上角按钮（行列表头交叉处）--- */
+QTableCornerButton::section {
+    background-color: #181c34;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}

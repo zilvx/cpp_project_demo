@@ -1,68 +1,65 @@
-// 配置构建任务
-// 自动化编译C++代码，替换手动输入命令
-// 与调试配置文件launch.json配合使用 实现调试前自动编译
 {
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake: Configure", // 生成构建系统（如 Makefile）
+            "label": "CMake Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Build the project using CMake"
+        },
+        {
+            "label": "Conan Install",
+            "type": "shell",
+            "command": "conan",
+            "args": [
+                "install",
+                ".",
+                "--output-folder=.",
+                "--build=missing",
+                "-s",
+                "build_type=Release"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Install Conan dependencies"
+        },
+        {
+            "label": "CMake Configure",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "-S",
-                "${workspaceFolder}", // 源码目录
+                "${workspaceFolder}",
                 "-B",
-                "${workspaceFolder}/build", // 构建目录
-                "-DCMAKE_BUILD_TYPE=Release" // 调试模式
+                "${workspaceFolder}/build",
+                "-DCMAKE_BUILD_TYPE=Release"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configure CMake project"
         },
         {
-            "label": "CMake: Build", // 编译项目
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/build",
-                "--config",
-                "Debug"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true // Ctrl+Shift+B 触发此任务
-            },
+            "label": "Full Rebuild (Conan + CMake)",
+            "dependsOrder": "sequence",
             "dependsOn": [
-                "CMake: Configure"
-            ] // 先执行 Configure
-        },
-        {
-            "label": "CMake: Clean", // 清理构建
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/build",
-                "--target",
-                "clean"
+                "Conan Install",
+                "CMake Configure",
+                "CMake Build"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Full rebuild from scratch"
         }
     ]
 }

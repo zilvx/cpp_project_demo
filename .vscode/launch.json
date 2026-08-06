@@ -1,29 +1,30 @@
-// 调试配置文件
-// 用于在VSCode中配置C++项目的调试环境
-// 主要用于macOS系统，使用LLDB调试器
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "lldb Debug",
-      "type": "cppdbg", // 调试器类型
-      "request": "launch", // 启动调试
-      "preLaunchTask": "CMake: Build",
-      "program": "${workspaceFolder}/build/main", // 可执行文件路径
-      "args": [], // 程序参数
-      "stopAtEntry": false, // 是否在入口暂停
-      "cwd": "${workspaceFolder}", // 工作目录
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb", // macOS 默认用 LLDB
-      "targetArchitecture": "arm64", // 目标架构
-      "setupCommands": [
+    "version": "0.2.0",
+    "configurations": [
         {
-          "description": "Enable pretty-printing for lldb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
+            "name": "C++ Launch (Build & Run)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/main",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "CMake Build"
+        },
+        {
+            "name": "C++ Launch (Run without building)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/main",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
         }
-      ]
-    },
-  ]
+    ]
 }

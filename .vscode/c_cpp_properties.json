@@ -1,22 +1,23 @@
-// C和CPP的扩展配置
 {
     "configurations": [
         {
             "name": "clang",
-            // 配置头文件的搜索路径，解决#include找不到的问题
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "includePath": [
-                "${workspaceFolder}/**", //工程下的所有文件
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1", // C++标准库头文件
-                "/Users/shenxing/.conan2/p/b/spdloeb3932c8cc89c/p/include/"
+                "${workspaceFolder}/**",
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1",
+                "${workspaceFolder}/build/**",
+                "/Users/shenxing/.conan2/p/b/spdlod088fc4958332/p/include",
+                "/Users/shenxing/.conan2/p/b/fmt634453917241d/p/include",
+                "/opt/homebrew/opt/qt/include",
+                "/opt/homebrew/opt/qt/lib/QtCore.framework/Headers",
+                "/opt/homebrew/opt/qt/lib/QtGui.framework/Headers",
+                "/opt/homebrew/opt/qt/lib/QtWidgets.framework/Headers"
             ],
-            // 定义预处理器宏
             "defines": [],
-            // 指定编译器路径
             "compilerPath": "/usr/bin/clang++",
-            // 指定C和C++标准
             "cStandard": "c17",
             "cppStandard": "c++17",
-            // 指定编译器的智能感知模式(代码补全、 跳转定义等)
             "intelliSenseMode": "macos-clang-arm64"
         }
     ],

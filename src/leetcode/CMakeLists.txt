@@ -1,1 +1,2 @@
 add_subdirectory(LongestPalindrome)
+add_subdirectory(SumOfTwoNum)
