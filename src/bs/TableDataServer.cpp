@@ -1,7 +1,6 @@
 #include "TableDataServer.h"
 
 #include <QDateTime>
-#include <QDebug>
 #include <QJsonDocument>
 
 #include <httplib/httplib.h>

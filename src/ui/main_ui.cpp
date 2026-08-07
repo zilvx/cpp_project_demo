@@ -8,6 +8,8 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <spdlog/spdlog.h>
+#include "../utils/logging/logutil.h"
 
 #include "widgets/TableWidget.h"
 #include "widgets/VirtualKeyboard.h"
@@ -21,6 +23,7 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    LogUtil::init("qt_table_app");
 
     auto *tablePage = new QWidget;
     auto *tableLayout = new QVBoxLayout(tablePage);
@@ -34,7 +37,7 @@ int main(int argc, char *argv[]) {
         QUrl("http://localhost:8080/api/table/proto"), table);
     QObject::connect(protoProvider, &IDataProvider::dataReady, table, &TableWidget::loadData);
     QObject::connect(protoProvider, &IDataProvider::errorOccurred,
-                     [](const QString &msg) { qWarning().noquote() << "Proto HTTP Error:" << msg; });
+                     [](const QString &msg) { spdlog::warn("Proto HTTP Error: {}", msg.toStdString()); });
     protoProvider->fetchData();
 #elif defined(USE_HTTP_DATA)
     auto *httpProvider = new HttpDataProvider(
@@ -110,5 +113,7 @@ int main(int argc, char *argv[]) {
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addWidget(tabs);
     window->show();
-    return app.exec();
+    const int ret = app.exec();
+    LogUtil::shutdown();
+    return ret;
 }

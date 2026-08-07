@@ -1,7 +1,7 @@
 #include "HttpProtoDataProvider.h"
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 HttpProtoDataProvider::HttpProtoDataProvider(const QUrl &url, QObject *parent)
     : IDataProvider(parent), m_url(url) {
@@ -35,7 +35,7 @@ void HttpProtoDataProvider::onReplyFinished(QNetworkReply *reply) {
 TableData HttpProtoDataProvider::parseProto(const QByteArray &data) const {
     table_data::TableData protoMsg;
     if (!protoMsg.ParseFromArray(data.constData(), data.size())) {
-        qWarning("HttpProtoDataProvider: failed to parse protobuf data");
+        spdlog::warn("HttpProtoDataProvider: failed to parse protobuf data");
         return {};
     }
     return TableData::fromProto(protoMsg);

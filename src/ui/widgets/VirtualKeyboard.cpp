@@ -1,6 +1,7 @@
 #include "VirtualKeyboard.h"
 
 #include <QFile>
+#include <spdlog/spdlog.h>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSpacerItem>
@@ -189,6 +190,6 @@ void VirtualKeyboard::loadStyleSheet() {
         setStyleSheet(QString::fromUtf8(f.readAll()));
         f.close();
     } else {
-        qWarning("VirtualKeyboard: failed to load :/keyboard_style.qss");
+        spdlog::warn("VirtualKeyboard: failed to load :/keyboard_style.qss");
     }
 }

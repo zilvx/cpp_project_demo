@@ -44,7 +44,7 @@ add_executable(qt_table_app
     src/ui/widgets/WaveformChart.cpp
     src/ui/resources.qrc
 )
-target_link_libraries(qt_table_app PRIVATE Qt6::Widgets Qt6::Network)
+target_link_libraries(qt_table_app PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
 target_link_options(qt_table_app PRIVATE
     -F${CMAKE_SOURCE_DIR}/stub_frameworks
     -Wl,-rpath,@executable_path/../Frameworks
@@ -71,7 +71,7 @@ add_executable(table_data_server
     src/bs/main_bs.cpp
     src/bs/TableDataServer.cpp
 )
-target_link_libraries(table_data_server PRIVATE Qt6::Core httplib::httplib)
+target_link_libraries(table_data_server PRIVATE Qt6::Core httplib::httplib spdlog::spdlog logutil_lib)
 set_target_properties(table_data_server PROPERTIES AUTOMOC ON)
 
 # ====== Protobuf (optional, via Conan) ======

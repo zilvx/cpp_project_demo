@@ -34,6 +34,7 @@ target_link_libraries(table_tests PRIVATE
     Qt6::Widgets
     Qt6::Network
     Qt6::Test
+    spdlog::spdlog
 )
 
 # 链接 stub AGL（macOS 26+ 兼容，需同时设置 -F 和 rpath）

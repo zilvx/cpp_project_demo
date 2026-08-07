@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QFont>
+#include <spdlog/spdlog.h>
 #include <QHeaderView>
 #include <QVBoxLayout>
 
@@ -26,7 +27,7 @@ void TableWidget::setupUI() {
         m_table->setStyleSheet(QString::fromUtf8(styleFile.readAll()));
         styleFile.close();
     } else {
-        qWarning("TableWidget: failed to load :/table.qss");
+        spdlog::warn("TableWidget: failed to load :/table.qss");
     }
 
     ScrollBarStyler::applyTo(m_table);

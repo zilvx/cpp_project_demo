@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <spdlog/spdlog.h>
 
 HttpDataProvider::HttpDataProvider(const QUrl &url, QObject *parent)
     : IDataProvider(parent), m_url(url) {
@@ -41,8 +42,8 @@ TableData HttpDataProvider::parseJson(const QByteArray &json) const {
     QJsonParseError err;
     const QJsonDocument doc = QJsonDocument::fromJson(json, &err);
     if (err.error != QJsonParseError::NoError) {
-        qWarning("HttpDataProvider: JSON parse error at offset %d: %s",
-                 err.offset, qPrintable(err.errorString()));
+        spdlog::warn("HttpDataProvider: JSON parse error at offset {}: {}",
+                     err.offset, err.errorString().toStdString());
         return result;
     }
     const QJsonObject root = doc.object();

@@ -1,6 +1,7 @@
 #include "ScrollBar.h"
 
 #include <QFile>
+#include <spdlog/spdlog.h>
 
 static QString s_scrollbarStyleSheet;
 
@@ -11,7 +12,7 @@ static const QString &scrollbarStyleSheet() {
             s_scrollbarStyleSheet = QString::fromUtf8(f.readAll());
             f.close();
         } else {
-            qWarning("ScrollBarStyler: failed to load :/scrollbar_style.qss");
+            spdlog::warn("ScrollBarStyler: failed to load :/scrollbar_style.qss");
         }
     }
     return s_scrollbarStyleSheet;

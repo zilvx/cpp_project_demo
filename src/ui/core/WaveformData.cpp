@@ -2,12 +2,12 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
 bool WaveformData::loadCSV(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("WaveformData: cannot open %s", qPrintable(filePath));
+        spdlog::warn("WaveformData: cannot open {}", filePath.toStdString());
         return false;
     }
 
@@ -30,7 +30,7 @@ bool WaveformData::loadCSV(const QString &filePath) {
     file.close();
 
     if (m_points.isEmpty()) {
-        qWarning("WaveformData: no valid data in %s", qPrintable(filePath));
+        spdlog::warn("WaveformData: no valid data in {}", filePath.toStdString());
         return false;
     }
 
