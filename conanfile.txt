@@ -1,8 +1,11 @@
 [requires]
 spdlog/1.13.0
+protobuf/3.21.12
+gtest/1.14.0
+cpp-httplib/0.47.0
 
 [generators]
-CMakeDeps         # 生成 FindXXX.cmake 文件
+CMakeDeps         # 生成 FindXXX.cmake / xxx-config.cmake 文件
 CMakeToolchain    # 生成 conan_toolchain.cmake
 
 [layout]

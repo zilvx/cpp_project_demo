@@ -11,9 +11,7 @@
                 "/opt/homebrew/opt/qt/lib/QtCore.framework/Headers",
                 "/opt/homebrew/opt/qt/lib/QtGui.framework/Headers",
                 "/opt/homebrew/opt/qt/lib/QtWidgets.framework/Headers",
-                "/opt/homebrew/opt/qt/lib/QtNetwork.framework/Headers",
-                "/opt/homebrew/opt/protobuf/include",
-                "/opt/homebrew/opt/abseil/include"
+                "/opt/homebrew/opt/qt/lib/QtNetwork.framework/Headers"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang++",

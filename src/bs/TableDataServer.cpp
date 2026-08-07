@@ -1,10 +1,18 @@
 #include "TableDataServer.h"
+
 #include <QDateTime>
 #include <QDebug>
 #include <QJsonDocument>
+
+#include <httplib/httplib.h>
+
 #ifdef TABLE_DATA_SERVER_PROTO
 #include "table_data.pb.h"
 #endif
+
+// ============================================================
+//  构造 / 析构
+// ============================================================
 
 TableDataServer::TableDataServer(QObject *parent) : QObject(parent) {
     m_tableData = QJsonObject::fromVariantMap({
@@ -32,111 +40,124 @@ TableDataServer::TableDataServer(QObject *parent) : QObject(parent) {
                         QStringLiteral("前端工程师"), QStringLiteral("2024-01-10"), QStringLiteral("")}),
         })},
     });
-    m_server = new QTcpServer(this);
-    connect(m_server, &QTcpServer::newConnection, this, &TableDataServer::onNewConnection);
 }
 
 TableDataServer::~TableDataServer() { stop(); }
 
+// ============================================================
+//  启动 / 停止
+// ============================================================
+
 bool TableDataServer::start(quint16 port) {
-    if (m_server->isListening()) { return true; }
-    if (!m_server->listen(QHostAddress::Any, port)) {
-        emit errorOccurred(QStringLiteral("Failed to listen on port %1: %2")
-            .arg(port).arg(m_server->errorString()));
+    if (m_running) { return true; }
+
+    m_server = std::make_unique<httplib::Server>();
+    registerRoutes();
+    m_port = port;
+
+    // std::thread 运行阻塞的 listen()，主线程继续 QCoreApplication 事件循环
+    m_running = true;
+    m_thread = std::thread([this, port]() {
+        m_server->listen("0.0.0.0", static_cast<int>(port));
+        m_running = false;
+    });
+
+    // 等待 listen() 就绪
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+    if (!m_server->is_running()) {
+        m_running = false;
+        if (m_thread.joinable()) m_thread.join();
+        emit errorOccurred(QStringLiteral("Failed to listen on port %1").arg(port));
         return false;
     }
-    m_port = port;
-    emit started(port);
+
+    emit started(m_port);
     return true;
 }
 
 void TableDataServer::stop() {
-    for (auto *c : m_clients) { c->disconnectFromHost(); c->deleteLater(); }
-    m_clients.clear();
-    if (m_server->isListening()) { m_server->close(); emit stopped(); }
-}
-
-bool TableDataServer::isRunning() const { return m_server && m_server->isListening(); }
-
-void TableDataServer::onNewConnection() {
-    while (m_server->hasPendingConnections()) {
-        auto *c = m_server->nextPendingConnection();
-        m_clients.insert(c);
-        connect(c, &QTcpSocket::readyRead, this, &TableDataServer::onReadyRead);
-        connect(c, &QTcpSocket::disconnected, this, &TableDataServer::onDisconnected);
+    if (m_server && m_server->is_running()) {
+        m_server->stop();
     }
-}
-
-void TableDataServer::onDisconnected() {
-    auto *c = qobject_cast<QTcpSocket *>(sender());
-    if (c) { m_clients.remove(c); c->deleteLater(); }
-}
-
-void TableDataServer::onReadyRead() {
-    auto *c = qobject_cast<QTcpSocket *>(sender());
-    if (c) handleRequest(c, c->readAll());
-}
-
-void TableDataServer::handleRequest(QTcpSocket *socket, const QByteArray &raw) {
-    const int nl = raw.indexOf('\n');
-    if (nl < 0) { sendError(socket, 400, QStringLiteral("Bad Request")); return; }
-    const QString reqLine = QString::fromUtf8(raw.left(nl)).trimmed();
-    const QStringList parts = reqLine.split(' ');
-    if (parts.size() < 2) { sendError(socket, 400, QStringLiteral("Bad Request")); return; }
-    const QString method = parts[0];
-    QString path = parts[1];
-    const int qi = path.indexOf('?');
-    if (qi >= 0) path = path.left(qi);
-
-    emit requestReceived(method, path, socket->peerAddress().toString());
-    if (method != QStringLiteral("GET")) { sendError(socket, 405, QStringLiteral("Method Not Allowed")); return; }
-
-    if (path == QStringLiteral("/api/table")) {
-        sendJson(socket, 200, m_tableData);
+    m_running = false;
+    if (m_thread.joinable()) {
+        m_thread.join();
     }
+    m_server.reset();
+    emit stopped();
+}
+
+bool TableDataServer::isRunning() const {
+    return m_running && m_server && m_server->is_running();
+}
+
+// ============================================================
+//  路由注册
+// ============================================================
+
+void TableDataServer::registerRoutes() {
+    // ---- GET /api/table (JSON) ----
+    m_server->Get("/api/table", [this](const httplib::Request &req,
+                                        httplib::Response &res) {
+        emit requestReceived(
+            QStringLiteral("GET"),
+            QStringLiteral("/api/table"),
+            QString::fromStdString(req.remote_addr));
+
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_content(
+            QJsonDocument(m_tableData).toJson(QJsonDocument::Indented).toStdString(),
+            "application/json; charset=utf-8");
+    });
+
+    // ---- GET /api/table/proto (Protobuf) ----
 #ifdef TABLE_DATA_SERVER_PROTO
-    else if (path == QStringLiteral("/api/table/proto")) {
+    m_server->Get("/api/table/proto", [this](const httplib::Request &req,
+                                              httplib::Response &res) {
+        emit requestReceived(
+            QStringLiteral("GET"),
+            QStringLiteral("/api/table/proto"),
+            QString::fromStdString(req.remote_addr));
+
         const QByteArray pb = serializeToProto();
-        if (pb.isEmpty()) { sendError(socket, 500, QStringLiteral("Protobuf serialization failed")); return; }
-        sendResponse(socket, 200, QStringLiteral("application/x-protobuf"), pb);
-    }
+        if (pb.isEmpty()) {
+            res.status = 500;
+            res.set_content(R"({"error":"Protobuf serialization failed"})",
+                            "application/json");
+            return;
+        }
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_content(pb.toStdString(), "application/x-protobuf");
+    });
 #endif
-    else if (path == QStringLiteral("/health")) {
+
+    // ---- GET /health ----
+    m_server->Get("/health", [this](const httplib::Request &req,
+                                     httplib::Response &res) {
+        emit requestReceived(
+            QStringLiteral("GET"),
+            QStringLiteral("/health"),
+            QString::fromStdString(req.remote_addr));
+
         QJsonObject h;
         h[QStringLiteral("status")] = QStringLiteral("ok");
-        h[QStringLiteral("time")] = QDateTime::currentDateTimeUtc().toString(Qt::ISODate);
-        h[QStringLiteral("rows")] = m_tableData.value(QStringLiteral("rows")).toArray().size();
-        sendJson(socket, 200, h);
-    } else {
-        sendError(socket, 404, QStringLiteral("Not Found"));
-    }
+        h[QStringLiteral("time")]   = QDateTime::currentDateTimeUtc()
+                                       .toString(Qt::ISODate);
+        h[QStringLiteral("rows")]   = m_tableData
+                                       .value(QStringLiteral("rows"))
+                                       .toArray().size();
+
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_content(
+            QJsonDocument(h).toJson(QJsonDocument::Indented).toStdString(),
+            "application/json; charset=utf-8");
+    });
 }
 
-void TableDataServer::sendResponse(QTcpSocket *s, int code, const QString &ct, const QByteArray &body) {
-    const QByteArray statusText = (code == 200) ? QByteArray("OK") :
-        (code == 400) ? QByteArray("Bad Request") : (code == 404) ? QByteArray("Not Found") :
-        (code == 405) ? QByteArray("Method Not Allowed") : (code == 500) ? QByteArray("Internal Server Error") : QByteArray("Unknown");
-    const QByteArray resp = QByteArray("HTTP/1.1 ") + QByteArray::number(code) + " " + statusText + "\r\n"
-        + "Content-Type: " + ct.toUtf8() + "; charset=utf-8\r\n"
-        + "Content-Length: " + QByteArray::number(body.size()) + "\r\n"
-        + "Access-Control-Allow-Origin: *\r\n"
-        + "Access-Control-Allow-Methods: GET, OPTIONS\r\n"
-        + "Access-Control-Allow-Headers: Content-Type, Accept\r\n"
-        + "Connection: close\r\n"
-        + "Server: TableDataServer/1.0\r\n\r\n" + body;
-    s->write(resp); s->flush(); s->disconnectFromHost();
-}
-
-void TableDataServer::sendJson(QTcpSocket *s, int code, const QJsonObject &json) {
-    sendResponse(s, code, QStringLiteral("application/json"), QJsonDocument(json).toJson(QJsonDocument::Indented));
-}
-
-void TableDataServer::sendError(QTcpSocket *s, int code, const QString &msg) {
-    QJsonObject err;
-    err[QStringLiteral("error")] = msg;
-    err[QStringLiteral("code")] = code;
-    sendJson(s, code, err);
-}
+// ============================================================
+//  Protobuf 序列化
+// ============================================================
 
 #ifdef TABLE_DATA_SERVER_PROTO
 QByteArray TableDataServer::serializeToProto() const {
@@ -148,7 +169,8 @@ QByteArray TableDataServer::serializeToProto() const {
     const QJsonArray ra = m_tableData.value(QStringLiteral("rows")).toArray();
     for (const auto &rv : ra) {
         auto *row = msg.add_rows();
-        for (const auto &cv : rv.toArray()) row->add_cells(cv.toString().toStdString());
+        for (const auto &cv : rv.toArray())
+            row->add_cells(cv.toString().toStdString());
     }
     std::string out;
     if (!msg.SerializeToString(&out)) return {};

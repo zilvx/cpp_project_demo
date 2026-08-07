@@ -65,33 +65,50 @@ if(USE_HTTP_DATA)
     target_compile_definitions(qt_table_app PRIVATE USE_HTTP_DATA)
 endif()
 
-# ====== Protobuf (optional) ======
-if(USE_PROTO_DATA)
-    list(PREPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/protobuf")
-    find_package(Protobuf MODULE REQUIRED)
-    set(PROTO_FILE ${CMAKE_SOURCE_DIR}/src/utils/proto/table_data.proto)
-    protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE})
-    target_sources(qt_table_app PRIVATE
-        src/ui/providers/HttpProtoDataProvider.cpp ${PROTO_SRCS})
-    target_compile_definitions(qt_table_app PRIVATE USE_PROTO_DATA)
-    target_include_directories(qt_table_app PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR} /opt/homebrew/opt/abseil/include)
-    target_link_libraries(qt_table_app PRIVATE protobuf::libprotobuf)
-endif()
-
-# ====== HTTP Backend Server ======
+# ====== HTTP Backend Server (cpp-httplib) ======
+find_package(httplib REQUIRED)
 add_executable(table_data_server
     src/bs/main_bs.cpp
     src/bs/TableDataServer.cpp
 )
-target_link_libraries(table_data_server PRIVATE Qt6::Network)
+target_link_libraries(table_data_server PRIVATE Qt6::Core httplib::httplib)
 set_target_properties(table_data_server PROPERTIES AUTOMOC ON)
 
+# ====== Protobuf (optional, via Conan) ======
 if(USE_PROTO_DATA)
+    find_package(protobuf REQUIRED)
+
+    set(PROTO_FILE ${CMAKE_SOURCE_DIR}/src/utils/proto/table_data.proto)
+    set(PROTO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+    # configure 阶段生成 proto 文件（AUTOMOC 编译 mocs_compilation.cpp 时需要 .pb.h）
+    get_target_property(_PROTOC protobuf::protoc IMPORTED_LOCATION)
+    execute_process(
+        COMMAND ${_PROTOC}
+            --cpp_out=${PROTO_GEN_DIR}
+            -I${CMAKE_SOURCE_DIR}/src/utils/proto
+            ${PROTO_FILE}
+        RESULT_VARIABLE _proto_ret
+    )
+    if(NOT _proto_ret EQUAL 0)
+        message(FATAL_ERROR "protoc failed on ${PROTO_FILE}")
+    endif()
+
+    set(PROTO_SRCS ${PROTO_GEN_DIR}/table_data.pb.cc ${PROTO_GEN_DIR}/table_data.pb.h)
+
+    target_sources(qt_table_app PRIVATE
+        src/ui/providers/HttpProtoDataProvider.cpp ${PROTO_SRCS})
+    target_compile_definitions(qt_table_app PRIVATE USE_PROTO_DATA)
+    target_include_directories(qt_table_app PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(qt_table_app PRIVATE protobuf::libprotobuf)
+
     target_sources(table_data_server PRIVATE ${PROTO_SRCS})
     target_compile_definitions(table_data_server PRIVATE TABLE_DATA_SERVER_PROTO)
-    target_include_directories(table_data_server PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR} /opt/homebrew/opt/abseil/include)
+    target_include_directories(table_data_server PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(table_data_server PRIVATE protobuf::libprotobuf)
 endif()
+
+# ====== Unit Tests (GoogleTest via Conan) ======
+enable_testing()
+add_subdirectory(tests)
 

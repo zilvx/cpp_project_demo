@@ -26,6 +26,12 @@ public:
     void setXLabel(const QString &label);
     void setYLabel(const QString &label);
 
+    // 工具方法（公开用于单元测试）
+    QPointF dataToPixel(const QPointF &dp, const QRect &r) const;
+    QPointF pixelToData(const QPointF &px, const QRect &r) const;
+    double  interpolateY(double dataX) const;
+    static double niceStep(double span, int targetDivs);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -40,14 +46,7 @@ private:
     void drawAxisLabels(QPainter &p, const QRect &r);
     void drawMarker(QPainter &p, const QRect &r);
 
-    // 坐标变换
-    QPointF dataToPixel(const QPointF &dp, const QRect &r) const;
-    QPointF pixelToData(const QPointF &px, const QRect &r) const;
     QRect   chartRect() const;
-
-    // 工具
-    double interpolateY(double dataX) const;
-    static double niceStep(double span, int targetDivs);
     static QPainterPath buildSmoothPath(const QVector<QPointF> &points);
 
     // ---- 数据 ----
