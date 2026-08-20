@@ -2,6 +2,25 @@ cmake_minimum_required(VERSION 3.10)
 project(TEST_CPP_PROJECT VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
+# ====== 自动加载 Conan 工具链（未显式传入或传入路径已失效时） ======
+# 使 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release 无需手动带
+# -DCMAKE_TOOLCHAIN_FILE 也能配置成功。若已在命令行显式传入有效工具链则跳过。
+if(NOT CMAKE_TOOLCHAIN_FILE OR NOT EXISTS "${CMAKE_TOOLCHAIN_FILE}")
+    file(GLOB_RECURSE _conan_toolchains
+        LIST_DIRECTORIES FALSE
+        "${CMAKE_CURRENT_SOURCE_DIR}/build/**/conan_toolchain.cmake"
+    )
+    list(SORT _conan_toolchains)
+    if(_conan_toolchains)
+        list(GET _conan_toolchains 0 _conan_toolchain)
+        message(STATUS "Conan toolchain: ${_conan_toolchain}")
+        include("${_conan_toolchain}")
+    else()
+        message(FATAL_ERROR
+            "未找到 Conan 生成的 conan_toolchain.cmake。请先运行:\n"
+            "  conan install . --output-folder=. --build=missing -s build_type=Release")
+    endif()
+endif()
 option(USE_HTTP_DATA  "Use HTTP JSON backend for table data" OFF)
 option(USE_PROTO_DATA "Use HTTP Protobuf backend for table data" OFF)
 
@@ -13,7 +32,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-include(${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake)
 find_package(spdlog REQUIRED)
 
 # ====== Qt6 ======
@@ -45,17 +63,10 @@ add_executable(qt_table_app
     src/ui/resources.qrc
 )
 target_link_libraries(qt_table_app PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
+# 链接 stub AGL（macOS 26+ 移除 AGL framework，Qt 仍链接它，需 -F + rpath）
 target_link_options(qt_table_app PRIVATE
     -F${CMAKE_SOURCE_DIR}/stub_frameworks
-    -Wl,-rpath,@executable_path/../Frameworks
-)
-add_custom_command(TARGET qt_table_app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-        "$<TARGET_BUNDLE_CONTENT_DIR:qt_table_app>/Frameworks"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/stub_frameworks"
-        "$<TARGET_BUNDLE_CONTENT_DIR:qt_table_app>/Frameworks"
-    COMMENT "Embedding stub AGL framework into app bundle"
+    -Wl,-rpath,${CMAKE_SOURCE_DIR}/stub_frameworks
 )
 set_target_properties(qt_table_app PROPERTIES
     MACOSX_BUNDLE TRUE WIN32_EXECUTABLE TRUE AUTOMOC ON AUTORCC ON AUTOUIC ON
@@ -65,6 +76,38 @@ if(USE_HTTP_DATA)
     target_compile_definitions(qt_table_app PRIVATE USE_HTTP_DATA)
 endif()
 
+# ====== 多进程抓取: 子进程程序（网络请求 + JSON 解析，独立进程） ======
+add_executable(fetch_table_child
+    src/child/fetch_table_child.cpp
+)
+target_link_libraries(fetch_table_child PRIVATE Qt6::Network Qt6::Core)
+
+# ====== 多进程抓取: 演示应用（ForkedHttpDataProvider + TableWidget） ======
+add_executable(qt_table_app_fork
+    src/ui/main_forked_demo.cpp
+    src/ui/providers/ForkedHttpDataProvider.cpp
+    src/ui/widgets/TableWidget.cpp
+    src/ui/widgets/VirtualKeyboard.cpp
+    src/ui/core/ScrollBar.cpp
+    src/ui/core/PenIconDelegate.cpp
+    src/ui/core/EditController.cpp
+    src/ui/core/WaveformData.cpp
+    src/ui/providers/IDataProvider.cpp
+    src/ui/providers/SampleDataProvider.cpp
+    src/ui/providers/HttpDataProvider.cpp
+    src/ui/widgets/WaveformChart.cpp
+    src/ui/resources.qrc
+)
+target_link_libraries(qt_table_app_fork PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
+set_target_properties(qt_table_app_fork PROPERTIES
+    MACOSX_BUNDLE TRUE WIN32_EXECUTABLE TRUE AUTOMOC ON AUTORCC ON AUTOUIC ON
+)
+# 链接 stub AGL（macOS 26+ 兼容，与 tests/CMakeLists.txt 一致）
+target_link_options(qt_table_app_fork PRIVATE
+    -F${CMAKE_SOURCE_DIR}/stub_frameworks
+    -Wl,-rpath,${CMAKE_SOURCE_DIR}/stub_frameworks
+)
+
 # ====== HTTP Backend Server (cpp-httplib) ======
 find_package(httplib REQUIRED)
 add_executable(table_data_server
@@ -73,6 +116,13 @@ add_executable(table_data_server
 )
 target_link_libraries(table_data_server PRIVATE Qt6::Core httplib::httplib spdlog::spdlog logutil_lib)
 set_target_properties(table_data_server PROPERTIES AUTOMOC ON)
+
+# ====== Prefork 多进程 HTTP 服务器（纯 POSIX，不依赖 Qt/cpp-httplib） ======
+add_executable(table_data_server_prefork
+    src/bs/main_prefork.cpp
+    src/bs/PreforkServer.cpp
+)
+target_link_libraries(table_data_server_prefork PRIVATE spdlog::spdlog logutil_lib)
 
 # ====== Protobuf (optional, via Conan) ======
 if(USE_PROTO_DATA)
