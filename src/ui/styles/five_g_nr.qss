@@ -1,0 +1,662 @@
+/* ====== FiveGNrWidget 样式 - Keysight Signal Studio for 5G NR (M9484C VXG) ====== */
+
+/* ====== 全局 ====== */
+#FiveGNrWidget {
+    background: #f7f9fc;
+    font-family: 'Helvetica Neue', 'PingFang SC', Arial;
+    font-size: 13px;
+    color: #1a2a3a;
+}
+
+/* ====== 顶部标题栏 ====== */
+#fgHeader {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #1a2a3a, stop:1 #0d1b2a);
+    border-bottom: 2px solid #2a6f9c;
+}
+
+#fgLogoIcon {
+    font-size: 22px;
+    color: #2a6f9c;
+}
+
+#fgLogoText {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+#fgLogoSub {
+    color: #8aaabc;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+#fgModelBadge {
+    background: #2a6f9c;
+    color: #ffffff;
+    font-size: 10px;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-weight: 400;
+}
+
+#fgAppIcon {
+    background: #1e5a80;
+    color: #b0d8f0;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+#fgConnDot {
+    color: #2ecc71;
+    font-size: 10px;
+}
+
+#fgConnText {
+    color: #aac;
+    font-size: 13px;
+}
+
+#fgFwText {
+    color: #4a6a7a;
+    font-size: 11px;
+}
+
+/* ====== Apps 菜单栏 ====== */
+#fgAppsBar {
+    background: #e8ecf1;
+    border-bottom: 1px solid #cdd3db;
+}
+
+#fgAppsLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5a6a;
+}
+
+#fgAppItem {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: #3a4a5a;
+    min-width: 0;
+}
+
+#fgAppItem:hover {
+    background: #e0e5ec;
+}
+
+#fgAppItem:checked {
+    background: #2a6f9c;
+    border-color: #2a6f9c;
+    color: #ffffff;
+}
+
+/* 5G NR 项右侧红色 5G 徽标 */
+#fgAppBadge5g {
+    background: #e74c3c;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 8px;
+    min-width: 0;
+}
+
+#fgRfLabel {
+    font-size: 12px;
+    color: #5a6a7a;
+}
+
+#fgRfToggleBtn {
+    background: #2ecc71;
+    color: #ffffff;
+    border: none;
+    padding: 4px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 60px;
+}
+
+#fgRfToggleBtn:hover {
+    background: #27ae60;
+}
+
+#fgRfToggleBtn:!checked {
+    background: #e74c3c;
+}
+
+#fgRfToggleBtn:!checked:hover {
+    background: #c0392b;
+}
+
+/* ====== 左导航面板 ====== */
+#fgNavPanel {
+    background: #ffffff;
+    border-right: 1px solid #e0e5ec;
+}
+
+#fgNavHeader {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6a7a8a;
+    text-transform: uppercase;
+    padding: 6px 18px 4px 18px;
+    letter-spacing: 0.5px;
+}
+
+#fgNavItem {
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 0;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #3a4a5a;
+    text-align: left;
+    min-width: 0;
+}
+
+#fgNavItem:hover {
+    background: rgba(42, 111, 156, 0.04);
+    color: #3a4a5a;
+}
+
+#fgNavItem:checked {
+    background: rgba(42, 111, 156, 0.08);
+    border-left: 3px solid #2a6f9c;
+    color: #0d1b2a;
+    font-weight: 500;
+}
+
+#fgNavBadge {
+    background: #cdd3db;
+    color: #4a5a6a;
+    font-size: 9px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+#fgNavBadge[active="true"] {
+    background: #2a6f9c;
+    color: #ffffff;
+}
+
+#fgNavBadge:checked {
+    background: #2a6f9c;
+    color: #ffffff;
+}
+
+#fgNavDivider {
+    background: #e8ecf1;
+    height: 1px;
+    margin: 8px 16px;
+}
+
+#fgNavToolItem {
+    background: transparent;
+    border: none;
+    padding: 6px 18px;
+    font-size: 13px;
+    color: #3a4a5a;
+    text-align: left;
+    min-width: 0;
+}
+
+#fgNavToolItem:hover {
+    background: rgba(42, 111, 156, 0.04);
+}
+
+/* ====== 中央参数配置面板 ====== */
+#fgConfigPanel {
+    background: #ffffff;
+}
+
+#fgConfigScroll {
+    background: #ffffff;
+    border: none;
+}
+
+#fgConfigViewport,
+#fgConfigContent {
+    background: #ffffff;
+}
+
+#fgConfigStack,
+#fgConfigStack > QWidget {
+    background: #ffffff;
+}
+
+#fgPanelTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a2a3a;
+}
+
+#fgPanelSub {
+    font-size: 12px;
+    font-weight: 400;
+    color: #6a7a8a;
+}
+
+#fgPanelBadge {
+    background: #e8ecf1;
+    color: #3a4a5a;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 12px;
+    min-width: 0;
+}
+
+#fgDescIcon {
+    color: #2a6f9c;
+    font-size: 13px;
+}
+
+#fgPanelDesc {
+    font-size: 13px;
+    color: #6a7a8a;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e8ecf1;
+}
+
+/* 快捷配置 */
+#fgQuickConfig {
+    background: #f7f9fc;
+    border: 1px dashed #cdd3db;
+    border-radius: 8px;
+}
+
+#fgQuickLabel {
+    font-size: 13px;
+    color: #4a5a6a;
+}
+
+#fgQuickBtn {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: #3a4a5a;
+    min-width: 0;
+}
+
+#fgQuickBtn:hover {
+    background: #e8ecf1;
+}
+
+#fgQuickBtn:checked {
+    background: #2a6f9c;
+    border-color: #2a6f9c;
+    color: #ffffff;
+}
+
+#fgQuickBtnPrimary {
+    background: #2a6f9c;
+    border: 1px solid #2a6f9c;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: #ffffff;
+    min-width: 0;
+}
+
+#fgQuickBtnPrimary:hover {
+    background: #1e5a80;
+}
+
+#fgQuickBtnPrimary:checked {
+    background: #1e5a80;
+}
+
+/* 参数节 */
+#fgParamSection {
+    background: transparent;
+    border: none;
+}
+
+#fgSectionLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5a6a;
+}
+
+#fgLevelBadge {
+    background: #6a7a8a;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    min-width: 0;
+}
+
+#fgLevelBadge[role="cell"] {
+    background: #2a6f9c;
+}
+
+#fgLevelBadge[role="bwp"] {
+    background: #8e44ad;
+}
+
+#fgLevelBadge[role="user"] {
+    background: #27ae60;
+}
+
+/* 参数行与项 */
+#fgParamRow {
+    background: transparent;
+    border: none;
+}
+
+#fgParamItem {
+    background: transparent;
+    border: none;
+}
+
+#fgParamLabel {
+    font-size: 12px;
+    color: #5a6a7a;
+    white-space: nowrap;
+}
+
+#fgParamUnit {
+    font-size: 12px;
+    color: #6a7a8a;
+}
+
+#fgParamSection QComboBox,
+#fgParamSection QLineEdit {
+    background: #fafbfc;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: #1a2a3a;
+    min-width: 110px;
+}
+
+#fgParamSection QComboBox:focus,
+#fgParamSection QLineEdit:focus {
+    border-color: #2a6f9c;
+    background: #ffffff;
+}
+
+#fgParamSection QComboBox::drop-down {
+    border: none;
+    width: 22px;
+}
+
+#fgParamSection QComboBox QAbstractItemView {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    selection-background-color: #2a6f9c;
+    selection-color: #ffffff;
+}
+
+#fgFreqEdit {
+    min-width: 80px;
+}
+
+/* 值显示（只读标签） */
+#fgValueDisplay {
+    background: #f0f3f7;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a2a3a;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* BWP 容器 */
+#fgBwpContainer {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    border-left: 3px solid #8e44ad;
+}
+
+#fgBwpContainerUl {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    border-left: 3px solid #2ecc71;
+}
+
+#fgBwpTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2a3a;
+}
+
+#fgBwpTitleUl {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2a3a;
+}
+
+/* BWP 操作按钮（复制 / 删除） */
+#fgBwpActionBtn {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 2px 12px;
+    font-size: 11px;
+    color: #3a4a5a;
+    min-width: 0;
+}
+
+#fgBwpActionBtn:hover {
+    background: #e8ecf1;
+}
+
+#fgBwpContainer QLineEdit,
+#fgBwpContainer QComboBox,
+#fgBwpContainerUl QLineEdit,
+#fgBwpContainerUl QComboBox {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    min-width: 80px;
+}
+
+/* CORESET 子层级 */
+#fgCoresetContainer {
+    background: #f0f3f7;
+    border: 1px dashed #cdd3db;
+    border-radius: 6px;
+}
+
+#fgCoresetTitle {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5a6a;
+}
+
+/* CORESET 添加按钮 */
+#fgCoresetAddBtn {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 1px 10px;
+    font-size: 10px;
+    color: #3a4a5a;
+    min-width: 0;
+}
+
+#fgCoresetAddBtn:hover {
+    background: #e8ecf1;
+}
+
+#fgCoresetContainer QLineEdit,
+#fgCoresetContainer QComboBox {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    min-width: 60px;
+}
+
+/* 说明文字 */
+#fgNote {
+    background: #f0f3f7;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 12px;
+    color: #6a7a8a;
+}
+
+/* 路由摘要 */
+#fgRouteSummary {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+#fgRouteSummaryText {
+    font-size: 12px;
+    color: #4a5a6a;
+}
+
+/* 生成按钮 */
+#fgGenPrimary {
+    background: #2a6f9c;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+#fgGenPrimary:hover {
+    background: #1e5a80;
+}
+
+#fgGenPrimary:disabled {
+    background: #5a8db8;
+}
+
+#fgGenSecondary {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    color: #3a4a5a;
+    border-radius: 6px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    min-width: 0;
+}
+
+#fgGenSecondary:hover {
+    background: #e8ecf1;
+}
+
+/* ====== 右侧辅助面板 ====== */
+#fgSidePanel {
+    background: #f7f9fc;
+    border-left: 1px solid #e0e5ec;
+}
+
+#fgInfoCard {
+    background: #ffffff;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+#fgCardTitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6a7a8a;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f0f3f7;
+}
+
+#fgHierIndent {
+    color: #cdd3db;
+    font-size: 12px;
+    min-width: 20px;
+}
+
+#fgHierLbl {
+    color: #6a7a8a;
+    font-size: 10px;
+    min-width: 46px;
+}
+
+#fgHierVal {
+    font-weight: 500;
+    font-size: 12px;
+    color: #1a2a3a;
+}
+
+#fgStatRow {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #f0f3f7;
+    padding: 3px 0;
+}
+
+#fgStatRow:last-child {
+    border-bottom: none;
+}
+
+#fgStatLabel {
+    color: #6a7a8a;
+    font-size: 12px;
+}
+
+#fgStatValue {
+    font-weight: 500;
+    font-size: 12px;
+    color: #1a2a3a;
+}
+
+#fgWaveFoot {
+    font-size: 10px;
+    color: #6a7a8a;
+}
+
+/* ====== 底部状态栏 ====== */
+#fgFooter {
+    background: #e8ecf1;
+    border-top: 1px solid #cdd3db;
+}
+
+#fgFooterItem {
+    font-size: 11px;
+    color: #5a6a7a;
+}
+
+/* ====== 分割器 ====== */
+/* 设计稿三栏面板紧贴（分隔线由导航栏 border-right / 侧栏 border-left 提供），
+   故隐藏分割器手柄，避免出现多余灰色间隙 */
+#fgSplitter::handle {
+    background: transparent;
+    width: 1px;
+    margin: 0;
+}
+
+#fgSplitter::handle:hover {
+    background: transparent;
+}

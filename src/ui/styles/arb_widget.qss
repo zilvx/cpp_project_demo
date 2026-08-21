@@ -1,0 +1,1135 @@
+/* ====== ArbWidget 样式文件 - Keysight VSG风格 ====== */
+
+/* ====== 全局样式 ====== */
+QWidget {
+    font-family: 'Helvetica Neue', 'PingFang SC', Arial;
+    font-size: 13px;
+    color: #1a2a3a;
+}
+
+QTabWidget::pane {
+    border: none;
+    background: transparent;
+}
+
+QTabBar::tab {
+    background: #e8ecf1;
+    color: #3a4a5a;
+    padding: 10px 20px;
+    margin-right: 2px;
+    border: 1px solid #cdd3db;
+    border-bottom: none;
+    font-weight: 500;
+    min-width: 80px;
+}
+
+QTabBar::tab:selected {
+    background: #f7f9fc;
+    color: #0d1b2a;
+    border-bottom-color: #f7f9fc;
+}
+
+QTabBar::tab:hover {
+    background: #e0e5ec;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px;
+}
+
+/* ====== 分割器 ====== */
+QSplitter::handle {
+    background: #e0e5ec;
+    width: 2px;
+    margin: 0 4px;
+}
+
+QSplitter::handle:hover {
+    background: #2a6f9c;
+}
+
+/* ====== QGroupBox ====== */
+QGroupBox {
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    margin-top: 4px;
+    padding: 10px 12px;
+    background: #ffffff;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 8px;
+    margin-left: 10px;
+    font-weight: 600;
+    color: #2a6f9c;
+}
+
+/* ====== 按钮 ====== */
+QPushButton {
+    background: #2a6f9c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    min-width: 80px;
+}
+
+QPushButton:hover {
+    background: #1e5a80;
+}
+
+QPushButton:pressed {
+    background: #153a5a;
+}
+
+QPushButton:disabled {
+    background: #cdd3db;
+    color: #a0b0c0;
+}
+
+QPushButton.secondary {
+    background: #ffffff;
+    color: #3a4a5a;
+    border: 1px solid #cdd3db;
+}
+
+QPushButton.secondary:hover {
+    background: #e8ecf1;
+}
+
+QPushButton.danger {
+    background: #e74c3c;
+    color: white;
+}
+
+QPushButton.danger:hover {
+    background: #c0392b;
+}
+
+/* ====== QTableWidget ====== */
+QTableWidget {
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    background: #fafbfc;
+    gridline-color: #e0e5ec;
+    alternate-background-color: #f7f9fc;
+}
+
+QHeaderView::section {
+    background: #f0f3f7;
+    padding: 6px 8px;
+    font-weight: 600;
+    color: #5a6a7a;
+    border: none;
+    border-bottom: 1px solid #e0e5ec;
+}
+
+QTableWidget::item {
+    padding: 8px;
+}
+
+QTableWidget::item:selected {
+    background: #2a6f9c;
+    color: white;
+}
+
+QTableWidget::item:hover {
+    background: #e8ecf1;
+}
+
+/* ====== QComboBox ====== */
+QComboBox {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 6px 12px;
+    min-width: 120px;
+}
+
+QComboBox:hover {
+    border-color: #2a6f9c;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 24px;
+}
+
+QComboBox::down-arrow {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #5a7a8a;
+}
+
+QComboBox QAbstractItemView {
+    background: white;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    selection-background-color: #2a6f9c;
+    selection-color: white;
+}
+
+/* ====== QCheckBox ====== */
+QCheckBox {
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #cdd3db;
+    border-radius: 3px;
+    background: white;
+}
+
+QCheckBox::indicator:checked {
+    background: #2a6f9c;
+    border-color: #2a6f9c;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #2a6f9c;
+}
+
+/* ====== QLabel ====== */
+QLabel {
+    color: #1a2a3a;
+}
+
+QLabel.info {
+    color: #6a7a8a;
+    font-size: 12px;
+}
+
+QLabel.value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* ====== LED指示灯 ====== */
+LED {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+LED.green {
+    background: #2ecc71;
+}
+
+LED.yellow {
+    background: #f1c40f;
+}
+
+LED.red {
+    background: #e74c3c;
+}
+
+/* ====== 滚动条 ====== */
+QScrollBar:vertical {
+    background: #f0f3f7;
+    width: 12px;
+    margin: 0;
+    border: none;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #cdd3db;
+    min-height: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #b0b8c8;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background: #f0f3f7;
+    height: 12px;
+    margin: 0;
+    border: none;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #cdd3db;
+    min-width: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #b0b8c8;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+/* ====== 输入框 ====== */
+QLineEdit {
+    background: #ffffff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: #1a2a3a;
+}
+
+QLineEdit:focus {
+    border-color: #2a6f9c;
+}
+
+QLineEdit:disabled {
+    background: #f0f3f7;
+    color: #a0b0c0;
+}
+
+/* ====== 进度条 ====== */
+QProgressBar {
+    border: 1px solid #e0e5ec;
+    border-radius: 3px;
+    background: #f0f3f7;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background: #2a6f9c;
+    border-radius: 3px;
+}
+
+/* ====== 工具提示 ====== */
+QToolTip {
+    background: #1a2a3a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+
+/* ====== 载波控制面板特定样式 ====== */
+#freqValue {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2a6f9c;
+}
+
+#powerValue {
+    font-size: 18px;
+    font-weight: 600;
+    color: #f0c86f;
+}
+
+/* ====== 前面板特定样式 ====== */
+#freqScreen {
+    font-family: 'Menlo';
+    font-size: 14px;
+    color: #6fc8f0;
+    font-weight: 600;
+}
+
+#powerScreen {
+    font-family: 'Menlo';
+    font-size: 14px;
+    color: #f0c86f;
+    font-weight: 600;
+}
+
+#statusScreen {
+    font-family: 'Menlo';
+    font-size: 14px;
+    color: #7ad0a0;
+    font-weight: 600;
+}
+
+#waveScreen {
+    font-size: 12px;
+    color: #8a9aaa;
+}
+
+#knobLabel {
+    font-size: 16px;
+    font-weight: 600;
+    color: #8a9aaa;
+}
+
+#arbBtn:checked, #pauseBtn:checked, #stopBtn:checked {
+    background: #2ecc71;
+}
+
+#rfBtn:checked {
+    background: #2ecc71;
+}
+
+#led1, #led2 {
+    color: #5a7a8a;
+}
+
+#led3 {
+    color: #5a7a8a;
+}
+
+/* ====== 状态栏样式 ====== */
+QStatusBar {
+    background: #e8ecf1;
+    border-top: 1px solid #cdd3db;
+    color: #5a6a7a;
+}
+
+QStatusBar::item {
+    border: none;
+    margin: 2px;
+}
+
+/* ====== 标题栏 ====== */
+#arbHeader {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #1a2a3a, stop:1 #0d1b2a);
+    border-bottom: 2px solid #2a6f9c;
+}
+
+/* ====== 左侧导航栏（对齐 5GNR 左侧导航） ====== */
+#arbNavPanel {
+    background: #ffffff;
+    border-right: 1px solid #e0e5ec;
+}
+
+#arbNavHeader {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6a7a8a;
+    text-transform: uppercase;
+    padding: 6px 18px 4px 18px;
+    letter-spacing: 0.5px;
+}
+
+#arbNavItem {
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 0;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #3a4a5a;
+    text-align: left;
+    min-width: 0;
+}
+
+#arbNavItem:hover {
+    background: rgba(42, 111, 156, 0.04);
+    color: #3a4a5a;
+}
+
+#arbNavItem:checked {
+    background: rgba(42, 111, 156, 0.08);
+    border-left: 3px solid #2a6f9c;
+    color: #0d1b2a;
+    font-weight: 500;
+}
+
+#arbNavBadge {
+    background: #cdd3db;
+    color: #4a5a6a;
+    font-size: 9px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+#arbNavBadge[active="true"] {
+    background: #2a6f9c;
+    color: #ffffff;
+}
+
+#arbNavDivider {
+    background: #e0e5ec;
+    height: 1px;
+    margin: 10px 18px;
+}
+
+#arbNavToolItem {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 8px 18px;
+    font-size: 12px;
+    color: #5a6a7a;
+    text-align: left;
+    min-width: 0;
+}
+
+#arbNavToolItem:hover {
+    background: rgba(42, 111, 156, 0.04);
+    color: #0d1b2a;
+}
+
+#arbRfToggleBtn {
+    background: #2ecc71;
+    color: #fff;
+    border: none;
+    padding: 4px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 60px;
+}
+
+#arbRfToggleBtn:!checked {
+    background: #e74c3c;
+}
+
+#arbRfToggleBtn:hover {
+    background: #27ae60;
+}
+
+#arbRfToggleBtn:!checked:hover {
+    background: #c0392b;
+}
+
+/* ====== 底部状态栏 ====== */
+#arbFooter {
+    background: #e8ecf1;
+    border-top: 1px solid #cdd3db;
+}
+
+/* ====== 载波页参数面板 ====== */
+#arbParamsPanel {
+    background: #ffffff;
+}
+
+#arbSectionTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a2a3a;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8ecf1;
+}
+
+#arbSubTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2a3a;
+    margin-top: 8px;
+}
+
+/* 波形选择器卡片 */
+#arbWaveformSelector {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+#arbBrowseBtn {
+    background: #fff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #3a4a5a;
+    min-width: 60px;
+}
+
+#arbBrowseBtn:hover {
+    background: #e8ecf1;
+}
+
+#arbDownloadBtn {
+    background: #2a6f9c;
+    border: 1px solid #2a6f9c;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 600;
+    min-width: 60px;
+}
+
+#arbDownloadBtn:hover {
+    background: #1e5a80;
+}
+
+/* 应用/停止按钮 */
+#arbApplyBtn {
+    background: #2a6f9c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: 600;
+}
+
+#arbApplyBtn:hover {
+    background: #1e5a80;
+}
+
+#arbStopBtn {
+    background: #fff;
+    border: 1px solid #cdd3db;
+    color: #3a4a5a;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: 600;
+}
+
+#arbStopBtn:hover {
+    background: #e8ecf1;
+}
+
+/* 参数组容器 */
+#arbParamGroup {
+    background: transparent;
+    border: none;
+}
+
+/* ====== 前面板（深色仪器风格） ====== */
+#arbFrontPanel {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #1a1a2e, stop:1 #2a2a3e);
+    border-left: 1px solid #3a3a4e;
+}
+
+#arbPanelBrand {
+    border-bottom: 1px solid #3a3a4e;
+}
+
+/* LCD 屏幕 */
+#arbPanelScreen {
+    background: #0a0a14;
+    border-radius: 8px;
+    border: 2px solid #2a3a4a;
+}
+
+/* 旋钮 */
+#arbKnob {
+    border-radius: 25px;
+    background: qradialgradient(cx:0.35, cy:0.35, radius:0.5,
+        stop:0 #3a3a4e, stop:1 #1a1a2e);
+    border: 2px solid #4a4a5e;
+    color: #8a9aaa;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#arbKnob:hover {
+    border-color: #5a7a9a;
+}
+
+#arbKnob:pressed {
+    background: qradialgradient(cx:0.35, cy:0.35, radius:0.5,
+        stop:0 #4a4a5e, stop:1 #2a2a3e);
+}
+
+/* 前面板硬件按钮 */
+#arbFrontArbBtn,
+#arbFrontPauseBtn,
+#arbFrontStopBtn {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #2a2a3e, stop:1 #1a1a2e);
+    border: 1px solid #3a3a4e;
+    border-radius: 4px;
+    padding: 8px 14px;
+    color: #b0b8c8;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+#arbFrontArbBtn:hover,
+#arbFrontPauseBtn:hover,
+#arbFrontStopBtn:hover {
+    background: #3a3a4e;
+    border-color: #5a7a9a;
+}
+
+#arbFrontArbBtn:checked {
+    background: #2a6f9c;
+    border-color: #2a6f9c;
+    color: #fff;
+}
+
+#arbFrontRfBtn {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #2a2a3e, stop:1 #1a1a2e);
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+    padding: 8px 14px;
+    color: #e74c3c;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+#arbFrontRfBtn:checked {
+    background: #2ecc71;
+    border-color: #2ecc71;
+    color: #fff;
+}
+
+#arbFrontRfBtn:hover {
+    background: #3a3a4e;
+}
+
+/* LED 指示灯行 */
+#arbLedRow {
+    border-top: 1px solid #2a3a4a;
+}
+
+/* ====== 输入框（载波页参数） ====== */
+#arbParamsPanel QLineEdit {
+    background: #fafbfc;
+    border: 1px solid #cdd3db;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #1a2a3a;
+}
+
+#arbParamsPanel QLineEdit:focus {
+    border-color: #2a6f9c;
+    background: #fff;
+}
+
+/* 上下箭头小按钮 */
+#arbParamsPanel QPushButton {
+    background: transparent;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #3a4a5a;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+#arbParamsPanel QPushButton:hover {
+    background: #e8ecf1;
+}
+
+/* ====== 标签页 ====== */
+#arbTabWidget::pane {
+    border: none;
+    background: #f7f9fc;
+}
+
+#arbTabWidget::tab-bar {
+    left: 0;
+    top: 0;
+}
+
+#arbTabWidget QTabBar::tab {
+    background: #e8ecf1;
+    color: #3a4a5a;
+    padding: 10px 20px;
+    margin-right: 2px;
+    border: 1px solid #cdd3db;
+    border-bottom: none;
+    font-weight: 500;
+    min-width: 80px;
+}
+
+#arbTabWidget QTabBar::tab:selected {
+    background: #f7f9fc;
+    color: #0d1b2a;
+    border-bottom-color: #f7f9fc;
+}
+
+#arbTabWidget QTabBar::tab:hover:!selected {
+    background: #e0e5ec;
+}
+
+/* ====== 分割器 ====== */
+#arbSplitter::handle {
+    background: #e0e5ec;
+    width: 2px;
+    margin: 0 4px;
+}
+
+#arbSplitter::handle:hover {
+    background: #2a6f9c;
+}
+
+/* ====== 波形页 ====== */
+#arbWaveformPanel {
+    background: #ffffff;
+}
+
+#arbWaveformSidebar {
+    background: #f7f9fc;
+    border-left: 1px solid #e0e5ec;
+    min-width: 240px;
+    max-width: 320px;
+}
+
+/* 侧边栏 section 标题 */
+#arbSidebarTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2a3a;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8ecf1;
+}
+
+/* 工具栏按钮 */
+#arbToolPrimaryBtn {
+    background: #2a6f9c;
+    border: 1px solid #2a6f9c;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 500;
+}
+
+#arbToolPrimaryBtn:hover {
+    background: #1e5a80;
+}
+
+#arbToolBtn {
+    background: #fff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #3a4a5a;
+}
+
+#arbToolBtn:hover {
+    background: #e8ecf1;
+}
+
+/* 侧边栏按钮 */
+#arbSidebarPrimaryBtn {
+    background: #2a6f9c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: 600;
+    text-align: center;
+}
+
+#arbSidebarPrimaryBtn:hover {
+    background: #1e5a80;
+}
+
+#arbSidebarSecondaryBtn {
+    background: #fff;
+    border: 1px solid #cdd3db;
+    color: #3a4a5a;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: 600;
+    text-align: center;
+}
+
+#arbSidebarSecondaryBtn:hover {
+    background: #e8ecf1;
+}
+
+/* 波形列表 */
+#arbWaveformList {
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    background: #fff;
+    gridline-color: #f0f3f7;
+}
+
+#arbWaveformList QHeaderView::section {
+    background: #f0f3f7;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5a6a7a;
+    border: none;
+    border-bottom: 1px solid #e0e5ec;
+}
+
+#arbWaveformList::item {
+    padding: 6px 8px;
+    color: #1a2a3a;
+}
+
+#arbWaveformList::item:selected {
+    background: #e8f0f7;
+    color: #0d1b2a;
+}
+
+#arbWaveformList::item:hover {
+    background: #f7f9fc;
+}
+
+/* 波形预览区 */
+#arbWaveformPreview {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+/* ====== 硬件页 ====== */
+#arbHardwarePanel {
+    background: #ffffff;
+}
+
+#arbHardwareSidebar {
+    background: #f7f9fc;
+    border-left: 1px solid #e0e5ec;
+    min-width: 240px;
+    max-width: 340px;
+}
+
+/* 硬件卡片 */
+#arbHwCard {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+#arbHwCardTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2a3a;
+}
+
+/* 参数行 label/value */
+#arbHwRowLabel {
+    font-size: 13px;
+    color: #6a7a8a;
+}
+
+#arbHwRowValue {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a2a3a;
+}
+
+/* 卡片操作按钮 */
+#arbHwCardPrimaryBtn {
+    background: #2a6f9c;
+    border: 1px solid #2a6f9c;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: #fff;
+}
+
+#arbHwCardPrimaryBtn:hover {
+    background: #1e5a80;
+}
+
+#arbHwCardBtn {
+    background: #fff;
+    border: 1px solid #cdd3db;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: #3a4a5a;
+}
+
+#arbHwCardBtn:hover {
+    background: #e8ecf1;
+}
+
+/* 底部设备信息栏 */
+#arbHwInfoBar {
+    background: #f0f3f7;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+/* 侧边栏状态项行 */
+#arbHwInfoItem {
+    border-bottom: 1px solid #e8ecf1;
+}
+
+/* 最近事件卡片 */
+#arbHwEventCard {
+    margin-top: 16px;
+    background: #fff;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+/* ====== 播放页（对齐 Playback.html） ====== */
+#arbPlaybackPanel {
+    background: #ffffff;
+}
+
+#arbPlaybackSidebar {
+    background: #f7f9fc;
+    border-left: 1px solid #e0e5ec;
+    min-width: 240px;
+    max-width: 280px;
+}
+
+/* 播放控制区 */
+#arbPlaybackCtrl {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 10px;
+}
+
+#arbPlayWaveName {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a2a3a;
+}
+
+#arbPlayStatus {
+    font-size: 13px;
+    color: #6a7a8a;
+}
+
+/* 圆形播放按钮：蓝=播放 / 橙=暂停 / 红=停止 */
+#arbPlayCircleBtn {
+    background: #2a6f9c;
+    border: none;
+    border-radius: 24px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    min-width: 48px;
+    padding: 0;
+}
+
+#arbPlayCircleBtn:hover {
+    background: #1e5a80;
+}
+
+#arbPauseCircleBtn {
+    background: #f39c12;
+    border: none;
+    border-radius: 24px;
+    color: #fff;
+    font-size: 14px;
+    min-width: 48px;
+    padding: 0;
+}
+
+#arbPauseCircleBtn:hover {
+    background: #d68910;
+}
+
+#arbStopCircleBtn {
+    background: #e74c3c;
+    border: none;
+    border-radius: 24px;
+    color: #fff;
+    font-size: 14px;
+    min-width: 48px;
+    padding: 0;
+}
+
+#arbStopCircleBtn:hover {
+    background: #c0392b;
+}
+
+/* 时间线 */
+#arbTimeline {
+    background: transparent;
+    border: none;
+}
+
+#arbTimeline QProgressBar {
+    background: #e0e5ec;
+    border: none;
+    border-radius: 3px;
+    max-height: 6px;
+}
+
+#arbTimeline QProgressBar::chunk {
+    background: #2a6f9c;
+    border-radius: 3px;
+}
+
+#arbTimeLabel {
+    font-size: 11px;
+    color: #6a7a8a;
+}
+
+/* 设置卡片 */
+#arbSettingCard {
+    background: #f7f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}
+
+#arbSettingLabel {
+    font-size: 12px;
+    color: #6a7a8a;
+}
+
+#arbSettingUnit {
+    font-size: 12px;
+    color: #6a7a8a;
+}
+
+/* 播放列表 */
+#arbPlaylistTable {
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    background: #fff;
+    gridline-color: transparent;
+}
+
+#arbPlaylistTable QHeaderView::section {
+    background: #f0f3f7;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5a6a7a;
+    border: none;
+    border-bottom: 1px solid #e0e5ec;
+}
+
+#arbPlaylistTable::item {
+    padding: 8px 10px;
+    color: #1a2a3a;
+    border-bottom: 1px solid #f0f3f7;
+}
+
+#arbPlaylistTable::item:selected {
+    background: #e8f0f7;
+    color: #0d1b2a;
+}
+
+#arbPlaylistTable::item:hover {
+    background: #f7f9fc;
+}
+
+/* 循环 badge（∞ 绿 / Nx 黄） */
+#arbLoopBadge {
+    background: #d4edda;
+    color: #155724;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 28px;
+}
+
+#arbLoopBadgeInf {
+    background: #fff3cd;
+    color: #856404;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 28px;
+}
+
+/* Marker 设置卡片 */
+#arbMarkerCard {
+    margin-top: 16px;
+    background: #fff;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+}

@@ -8,6 +8,7 @@ set(TEST_SRCS
     test_waveform_data.cpp
     test_table_data.cpp
     test_edit_controller.cpp
+    test_arb_csv.cpp
 )
 
 # 被测源文件（直接编译进测试可执行文件）

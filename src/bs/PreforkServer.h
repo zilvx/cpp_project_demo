@@ -17,8 +17,8 @@
  *   - fork() 之后子进程不能再碰 Qt 对象（Qt 官方仅允许 fork 后立即 exec
  *     或执行 async-signal-safe 操作）。因此 worker 全程只用 POSIX API，
  *     响应数据在 fork 之前就序列化为 std::string，worker 靠写时复制共享。
- *   - worker 的日志只写 stderr，不复用父进程的 spdlog（rotating file sink
- *     在 fork 后跨进程共享文件偏移会互相覆盖）。
+ *   - worker 的日志写 stderr + 独立文件 logs/table_data_server_prefork_worker_<pid>.log，
+ *     不复用父进程 spdlog（rotating file sink 在 fork 后跨进程共享会互相覆盖）。
  *
  * 仅实现两个 JSON 端点: GET /api/table、GET /health。
  */

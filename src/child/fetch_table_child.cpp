@@ -27,6 +27,9 @@
 #include <QUrl>
 
 #include <cstdio>
+#include <spdlog/spdlog.h>
+
+#include "logutil.h"
 
 namespace {
 
@@ -41,9 +44,12 @@ bool writeAllStdout(const QByteArray &data) {
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
+    // stdout 承载 JSON 协议，控制台日志必须走 stderr；独立文件避免与父进程抢同一 log
+    LogUtil::init("fetch_table_child", "", 1024 * 1024 * 5, 3, /*use_stderr=*/true);
 
     if (argc < 2) {
-        fprintf(stderr, "用法: fetch_table_child <url> [timeoutMs]\n");
+        spdlog::error("用法: fetch_table_child <url> [timeoutMs]");
+        LogUtil::shutdown();
         return 3;
     }
 
@@ -51,9 +57,12 @@ int main(int argc, char *argv[]) {
     const int     timeout = (argc >= 3) ? QString::fromLocal8Bit(argv[2]).toInt() : 5000;
     const QUrl    url(urlStr);
     if (!url.isValid()) {
-        fprintf(stderr, "无效 URL: %s\n", argv[1]);
+        spdlog::error("无效 URL: {}", argv[1]);
+        LogUtil::shutdown();
         return 3;
     }
+
+    spdlog::info("抓取开始 url={} timeoutMs={}", urlStr.toStdString(), timeout);
 
     auto *nam   = new QNetworkAccessManager;
     auto *reply = nam->get(QNetworkRequest(url));
@@ -67,8 +76,8 @@ int main(int argc, char *argv[]) {
         nam->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            fprintf(stderr, "HTTP 错误: %s\n",
-                    reply->errorString().toUtf8().constData());
+            spdlog::error("HTTP 错误: {}", reply->errorString().toStdString());
+            LogUtil::shutdown();
             QCoreApplication::exit(1);
             return;
         }
@@ -79,8 +88,9 @@ int main(int argc, char *argv[]) {
         QJsonParseError perr;
         const QJsonDocument doc = QJsonDocument::fromJson(body, &perr);
         if (perr.error != QJsonParseError::NoError || !doc.isObject()) {
-            fprintf(stderr, "JSON 解析失败 offset=%d: %s\n", perr.offset,
-                    perr.errorString().toUtf8().constData());
+            spdlog::error("JSON 解析失败 offset={}: {}", perr.offset,
+                          perr.errorString().toStdString());
+            LogUtil::shutdown();
             QCoreApplication::exit(1);
             return;
         }
@@ -88,10 +98,13 @@ int main(int argc, char *argv[]) {
         // 回传已经解析成功的规范化 JSON（父进程只需做受信任的结构还原）
         const QByteArray out = doc.toJson(QJsonDocument::Compact);
         if (!writeAllStdout(out)) {
-            fprintf(stderr, "写入 stdout 失败\n");
+            spdlog::error("写入 stdout 失败");
+            LogUtil::shutdown();
             QCoreApplication::exit(1);
             return;
         }
+        spdlog::info("抓取成功 bytes={}", out.size());
+        LogUtil::shutdown();
         QCoreApplication::exit(0);
     });
 
@@ -100,7 +113,8 @@ int main(int argc, char *argv[]) {
     QObject::connect(&timer, &QTimer::timeout, [&]() {
         timedOut = true;
         reply->abort();
-        fprintf(stderr, "超时 %d ms\n", timeout);
+        spdlog::error("超时 {} ms", timeout);
+        LogUtil::shutdown();
         QCoreApplication::exit(2);
     });
     timer.start(timeout);

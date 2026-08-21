@@ -31,4 +31,8 @@ cmake --build build
 
 - Code comments, commit messages, and QSS labels are written in **Chinese**.
 - Styles belong in `src/ui/styles/*.qss` (loaded via `resources.qrc`), never inline C++ string literals.
-- Logging via `LogUtil::init()` (spdlog: console + rotating file `logs/app.log`, 5MB × 3). Call `init()` early and `shutdown()` at exit; it degrades to console-only if the file sink fails.
+- Logging via `LogUtil::init(log_name)` (spdlog: console + rotating file, 5MB × 3).
+  - **All processes archive under project-root `logs/`** (walk up from exe/CWD until `CMakeLists.txt` or `.git` is found). Not CWD-relative, not `build/logs/`.
+  - Each process uses its own file: `logs/qt_table_app.log`, `logs/table_data_server.log`, `logs/fetch_table_child.log`, …. Prefork workers: `logs/table_data_server_prefork_worker_<pid>.log` (O_APPEND, not parent spdlog).
+  - If project root cannot be detected, falls back to exe-adjacent / CWD `logs/`, then temp. File sink failure → console-only + `/tmp/cpp_project_demo_logutil_error.txt`.
+  - Call `init()` early and `shutdown()` at exit. Child processes whose stdout is a protocol pipe must pass `use_stderr=true`.

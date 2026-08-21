@@ -12,6 +12,7 @@
 // URL 可用环境变量 FORKED_DATA_URL 覆盖。
 
 #include <QApplication>
+#include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -26,6 +27,9 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    QCoreApplication::setOrganizationName(QStringLiteral("cpp_project_demo"));
+    QCoreApplication::setOrganizationDomain(QStringLiteral("com.cppprojectdemo"));
+    QCoreApplication::setApplicationName(QStringLiteral("qt_table_app_fork"));
     LogUtil::init("qt_table_app_fork");
 
     QUrl url(QString::fromLocal8Bit(qgetenv("FORKED_DATA_URL")));

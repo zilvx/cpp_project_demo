@@ -1,0 +1,196 @@
+/* ============================================
+   文件管理器 — 对照 Windows 风格设计稿
+   ============================================ */
+
+FileManagerWidget {
+    background: #f0f2f5;
+    border: 1px solid #c8cbd1;
+    border-radius: 8px;
+}
+
+/* --- 标题栏 --- */
+#fmTitleBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #ffffff, stop:1 #e6e9ee);
+    border-bottom: 1px solid #c8cbd1;
+}
+
+#fmTitleText {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+#fmWinMin, #fmWinMax, #fmWinClose {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #333;
+    font-size: 14px;
+}
+
+#fmWinMin:hover, #fmWinMax:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+#fmWinClose:hover {
+    background: #e81123;
+    color: #ffffff;
+}
+
+/* --- 工具栏 --- */
+#fmToolBar {
+    background: #f8f9fb;
+    border-bottom: 1px solid #d9dce1;
+}
+
+#fmNavBtn {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #333;
+    font-size: 15px;
+}
+
+#fmNavBtn:hover:enabled {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+#fmNavBtn:disabled {
+    color: #b0b0b0;
+}
+
+#fmAddressBar {
+    background: #ffffff;
+    border: 1px solid #c8cbd1;
+    border-radius: 6px;
+}
+
+#fmAddressIcon {
+    color: #888;
+    font-size: 13px;
+}
+
+#fmAddressEdit {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: #1a1a1a;
+    padding: 4px 0;
+    selection-background-color: rgba(0, 120, 215, 0.25);
+}
+
+/* --- 侧边栏 --- */
+#fmSidebar {
+    background: #f8f9fb;
+    border: none;
+    border-right: 1px solid #d9dce1;
+    outline: none;
+    font-size: 13px;
+    color: #1a1a1a;
+    padding: 8px 0;
+}
+
+#fmSidebar::item {
+    height: 28px;
+    padding: 2px 12px;
+    border: none;
+    border-left: 3px solid transparent;
+}
+
+#fmSidebar::item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+#fmSidebar::item:selected {
+    background: rgba(0, 120, 215, 0.12);
+    border-left: 3px solid #0078d7;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+/* --- 内容区 --- */
+#fmContent {
+    background: #ffffff;
+}
+
+#fmViewBtn {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #555;
+    font-size: 14px;
+}
+
+#fmViewBtn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+#fmViewBtn:checked {
+    background: rgba(0, 120, 215, 0.1);
+    color: #0078d7;
+}
+
+#fmSortLabel {
+    font-size: 12px;
+    color: #666;
+}
+
+#fmFileList {
+    background: #ffffff;
+    border: none;
+    outline: none;
+    color: #1a1a1a;
+    font-size: 12px;
+}
+
+#fmFileList::item {
+    border-radius: 6px;
+    padding: 6px 4px;
+}
+
+#fmFileList::item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+#fmFileList::item:selected {
+    background: rgba(0, 120, 215, 0.15);
+    color: #1a1a1a;
+}
+
+/* --- 状态栏 --- */
+#fmStatusBar {
+    background: #f8f9fb;
+    border-top: 1px solid #d9dce1;
+}
+
+#fmStatusLeft, #fmStatusRight {
+    font-size: 12px;
+    color: #5a5a5a;
+}
+
+/* --- 滚动条 --- */
+#fmSidebar QScrollBar:vertical,
+#fmFileList QScrollBar:vertical {
+    width: 6px;
+    background: transparent;
+}
+
+#fmSidebar QScrollBar::handle:vertical,
+#fmFileList QScrollBar::handle:vertical {
+    background: #c8cbd1;
+    border-radius: 3px;
+    min-height: 24px;
+}
+
+#fmSidebar QScrollBar::handle:vertical:hover,
+#fmFileList QScrollBar::handle:vertical:hover {
+    background: #a8abb2;
+}
+
+#fmSidebar QScrollBar::add-line:vertical,
+#fmSidebar QScrollBar::sub-line:vertical,
+#fmFileList QScrollBar::add-line:vertical,
+#fmFileList QScrollBar::sub-line:vertical {
+    height: 0;
+}

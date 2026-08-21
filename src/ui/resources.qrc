@@ -3,5 +3,8 @@
         <file alias="table.qss">styles/table.qss</file>
         <file alias="keyboard_style.qss">styles/keyboard_style.qss</file>
         <file alias="scrollbar_style.qss">styles/scrollbar_style.qss</file>
+        <file alias="file_manager.qss">styles/file_manager.qss</file>
+        <file alias="arb_widget.qss">styles/arb_widget.qss</file>
+        <file alias="five_g_nr.qss">styles/five_g_nr.qss</file>
     </qresource>
 </RCC>

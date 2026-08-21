@@ -211,6 +211,39 @@ brew install qt
 - **IntelliSense**: `build/compile_commands.json` 自动生成（需 `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`）
 - **Code Runner**: 通过 CMake 构建后运行，配置见 `.vscode/settings.json`
 
+## 打包发布
+
+使用 `packaging/build_package.py` 一键构建并打包当前平台的发布产物（自动执行
+`conan install` → CMake 构建 → 依赖部署 → 生成分发文件）：
+
+```bash
+python3 packaging/build_package.py                      # 全量打包
+python3 packaging/build_package.py -t qt                # 仅 Qt 桌面应用
+python3 packaging/build_package.py -t server            # 仅后端服务
+python3 packaging/build_package.py --data-source http   # HTTP JSON 数据源构建
+python3 packaging/build_package.py --skip-build         # 只打包已有构建产物
+```
+
+各平台产物（输出到 `build/dist/<平台>/`，已被 gitignore 忽略）：
+
+| 平台 | 产物 | 说明 |
+|------|------|------|
+| macOS | `QtDemo-<版本>-macos.dmg` | 两个 `.app` 已内置 Qt 框架并 ad-hoc 签名，可独立运行 |
+| Windows | `QtDemo-<版本>-windows-x86_64.zip` | `windeployqt` 收集 Qt DLL/插件 |
+| Linux | `QtDemo-<版本>-linux-x86_64.tar.gz` | 手动收集动态库 + `patchelf` 改写 rpath |
+
+> 注意：Windows 需在 MSVC 开发者环境中运行，并用 `--qt-dir` 指定 Qt 安装目录；
+> Linux 依赖 `patchelf`；脚本只能在当前操作系统上打包对应平台产物。
+
+### 打包范围
+
+| 目标 | 内容 |
+|------|------|
+| `all`（默认） | 桌面应用 + 后端服务 + 控制台程序 |
+| `qt` | `qt_table_app`、`qt_table_app_fork`（含内嵌子进程 `fetch_table_child`） |
+| `server` | `table_data_server`、`table_data_server_prefork` |
+| `console` | `main` |
+
 ## 更多文档
 
 - [问题排查记录](docs/troubleshooting.md) — 14 个历史问题及解决方案

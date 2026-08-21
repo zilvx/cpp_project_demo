@@ -56,10 +56,14 @@ add_executable(qt_table_app
     src/ui/core/PenIconDelegate.cpp
     src/ui/core/EditController.cpp
     src/ui/core/WaveformData.cpp
+    src/ui/core/WaveformGenerator.cpp
     src/ui/providers/IDataProvider.cpp
     src/ui/providers/SampleDataProvider.cpp
     src/ui/providers/HttpDataProvider.cpp
     src/ui/widgets/WaveformChart.cpp
+    src/ui/widgets/ArbWidget.cpp
+    src/ui/widgets/FileManagerWidget.cpp
+    src/ui/widgets/FiveGNrWidget.cpp
     src/ui/resources.qrc
 )
 target_link_libraries(qt_table_app PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
@@ -70,6 +74,11 @@ target_link_options(qt_table_app PRIVATE
 )
 set_target_properties(qt_table_app PROPERTIES
     MACOSX_BUNDLE TRUE WIN32_EXECUTABLE TRUE AUTOMOC ON AUTORCC ON AUTOUIC ON
+    # 空 CFBundleIdentifier 会导致 macOS 原生 NSOpenPanel/NSSavePanel 静默失败
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.cppprojectdemo.qt-table-app"
+    MACOSX_BUNDLE_BUNDLE_NAME "Qt Table App"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
 )
 
 if(USE_HTTP_DATA)
@@ -80,7 +89,7 @@ endif()
 add_executable(fetch_table_child
     src/child/fetch_table_child.cpp
 )
-target_link_libraries(fetch_table_child PRIVATE Qt6::Network Qt6::Core)
+target_link_libraries(fetch_table_child PRIVATE Qt6::Network Qt6::Core spdlog::spdlog logutil_lib)
 
 # ====== 多进程抓取: 演示应用（ForkedHttpDataProvider + TableWidget） ======
 add_executable(qt_table_app_fork
@@ -92,15 +101,22 @@ add_executable(qt_table_app_fork
     src/ui/core/PenIconDelegate.cpp
     src/ui/core/EditController.cpp
     src/ui/core/WaveformData.cpp
+    src/ui/core/WaveformGenerator.cpp
     src/ui/providers/IDataProvider.cpp
     src/ui/providers/SampleDataProvider.cpp
     src/ui/providers/HttpDataProvider.cpp
     src/ui/widgets/WaveformChart.cpp
+    src/ui/widgets/ArbWidget.cpp
+    src/ui/widgets/FiveGNrWidget.cpp
     src/ui/resources.qrc
 )
 target_link_libraries(qt_table_app_fork PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
 set_target_properties(qt_table_app_fork PROPERTIES
     MACOSX_BUNDLE TRUE WIN32_EXECUTABLE TRUE AUTOMOC ON AUTORCC ON AUTOUIC ON
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.cppprojectdemo.qt-table-app-fork"
+    MACOSX_BUNDLE_BUNDLE_NAME "Qt Table App Fork"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
 )
 # 链接 stub AGL（macOS 26+ 兼容，与 tests/CMakeLists.txt 一致）
 target_link_options(qt_table_app_fork PRIVATE

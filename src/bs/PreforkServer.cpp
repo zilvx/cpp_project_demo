@@ -1,6 +1,7 @@
 #include "PreforkServer.h"
 
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
@@ -14,6 +15,8 @@
 #include <string>
 
 #include <spdlog/spdlog.h>
+
+#include "logutil.h"
 
 // ============================================================
 //  响应数据（fork 之前构造，worker 靠写时复制共享）
@@ -69,9 +72,28 @@ pid_t waitpidRetry(pid_t pid, int* status, int options) {
     return r;
 }
 
-// 单次 write 到 stderr，避免多个 worker 共享 stderr 时字符交错乱序
+// worker 独立日志 fd（O_APPEND，短写原子；不复用父进程 spdlog rotating sink）
+int g_workerLogFd = -1;
+
+void openWorkerLogFile(pid_t pid) {
+    const std::string path =
+        LogUtil::resolveLogDirectory() + "/table_data_server_prefork_worker_"
+        + std::to_string(pid) + ".log";
+    g_workerLogFd = ::open(path.c_str(), O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC, 0644);
+    if (g_workerLogFd < 0) {
+        const std::string err = "[worker " + std::to_string(pid)
+            + "] open log failed: " + path + " — " + strerror(errno) + "\n";
+        write(STDERR_FILENO, err.data(), err.size());
+    }
+}
+
+// 单次 write 到 stderr + 本 worker 日志文件，避免多进程共享 rotating sink
 void workerLog(const std::string& msg) {
     write(STDERR_FILENO, msg.data(), msg.size());
+    if (g_workerLogFd >= 0) {
+        // 忽略短写/错误：日志失败不应影响 accept 循环
+        (void)write(g_workerLogFd, msg.data(), msg.size());
+    }
 }
 
 } // namespace
@@ -183,7 +205,8 @@ void PreforkServer::forkWorkers(int numWorkers) {
 
 void PreforkServer::workerLoop() {
     const pid_t pid = getpid();
-    // 子进程只写 stderr，不复用父进程 spdlog（rotating file sink 跨进程不安全）
+    // 子进程独立文件日志，不复用父进程 spdlog（rotating file sink 跨进程不安全）
+    openWorkerLogFile(pid);
     workerLog("[worker " + std::to_string(pid) + "] started\n");
 
     while (!g_stop) {
