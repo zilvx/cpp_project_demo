@@ -66,6 +66,13 @@ add_executable(qt_table_app
     src/ui/widgets/FileManagerDialog.cpp
     src/ui/widgets/FiveGNrWidget.cpp
     src/ui/core/ToastService.h
+    src/ui/components/ui_common/param_row.cpp
+    src/ui/components/ui_common/led_indicator.cpp
+    src/ui/components/ui_common/stat_row.cpp
+    src/ui/components/ui_common/group_box.cpp
+    src/ui/components/ui_common/nav_button.cpp
+    src/ui/components/ui_common/lcd_display.cpp
+    src/ui/components/ui_common/keyboard_pad.cpp
     src/ui/resources.qrc
     src/ui/qml.qrc
 )
@@ -113,6 +120,14 @@ add_executable(qt_table_app_fork
     src/ui/widgets/FileManagerWidget.cpp
     src/ui/widgets/FileManagerDialog.cpp
     src/ui/widgets/FiveGNrWidget.cpp
+    src/ui/core/ToastService.h
+    src/ui/components/ui_common/param_row.cpp
+    src/ui/components/ui_common/led_indicator.cpp
+    src/ui/components/ui_common/stat_row.cpp
+    src/ui/components/ui_common/group_box.cpp
+    src/ui/components/ui_common/nav_button.cpp
+    src/ui/components/ui_common/lcd_display.cpp
+    src/ui/components/ui_common/keyboard_pad.cpp
     src/ui/resources.qrc
 )
 target_link_libraries(qt_table_app_fork PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
