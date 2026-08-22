@@ -194,3 +194,39 @@ FileManagerWidget {
 #fmFileList QScrollBar::sub-line:vertical {
     height: 0;
 }
+
+/* --- 弹框底部按钮栏 --- */
+#fmDlgBtnBar {
+    background: #f8f9fb;
+    border-top: 1px solid #d9dce1;
+}
+
+#fmDlgHint {
+    font-size: 12px;
+    color: #8a8a8a;
+}
+
+#fmDlgBtnBar QPushButton {
+    background: #ffffff;
+    border: 1px solid #c8cbd1;
+    border-radius: 4px;
+    padding: 5px 18px;
+    font-size: 13px;
+    color: #1a1a1a;
+    min-width: 64px;
+}
+
+#fmDlgBtnBar QPushButton:hover {
+    background: #eef1f5;
+}
+
+#fmDlgBtnBar QPushButton:default {
+    background: #0078d7;
+    border: none;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+#fmDlgBtnBar QPushButton:default:hover {
+    background: #1a86d9;
+}

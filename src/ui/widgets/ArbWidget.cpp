@@ -1,9 +1,11 @@
 #include "ArbWidget.h"
+#include "FileManagerDialog.h"
 
 #include <QCheckBox>
 #include <QColor>
 #include <QComboBox>
 #include <QDateTime>
+#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QFile>
 #include <QFileDialog>
@@ -94,6 +96,7 @@ void ArbWidget::setupUI() {
 
     // 左侧：导航栏（载波/波形/硬件/播放，对齐 5GNR 左侧导航样式）
     m_navPanel = createNavPanel();
+    m_navPanel->setMinimumWidth(200);
     splitter->addWidget(m_navPanel);
 
     // 中央：标签页容器（页签条隐藏，由左侧导航栏切换）
@@ -113,13 +116,14 @@ void ArbWidget::setupUI() {
 
     // 右侧：前面板（仅载波页显示）
     m_frontPanel = createFrontPanel();
+    m_frontPanel->setMinimumWidth(300);
     splitter->addWidget(m_frontPanel);
 
     // 分割器初始比例（导航 0 : 中央 2 : 右侧 1.2）
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 2);
     splitter->setStretchFactor(2, 1);
-    splitter->setSizes({180, 600, 360});
+    splitter->setSizes({200, 560, 300});
 
     // 底部状态栏
     m_footer = createFooter();
@@ -1220,8 +1224,16 @@ QWidget *ArbWidget::createFrontPanel() {
         return w;
     };
 
-    knobGroup->addWidget(makeKnob(QStringLiteral("频率"), m_upFreqBtn));
-    knobGroup->addWidget(makeKnob(QStringLiteral("功率"), m_upPowerBtn));
+    QPushButton *knobFreqBtn = nullptr;
+    QPushButton *knobPowerBtn = nullptr;
+    knobGroup->addWidget(makeKnob(QStringLiteral("频率"), knobFreqBtn));
+    knobGroup->addWidget(makeKnob(QStringLiteral("功率"), knobPowerBtn));
+    if (knobFreqBtn) {
+        connect(knobFreqBtn, &QPushButton::clicked, this, &ArbWidget::onFreqUp);
+    }
+    if (knobPowerBtn) {
+        connect(knobPowerBtn, &QPushButton::clicked, this, &ArbWidget::onPowerUp);
+    }
     controlsLay->addLayout(knobGroup);
 
     controlsLay->addStretch();
@@ -1543,11 +1555,13 @@ QFrame *ArbWidget::createValueRow(QWidget *valueWidget, const QString &unit,
     layout->addWidget(new QLabel(unit));
 
     if (upBtn) {
+        upBtn->setObjectName(QStringLiteral("arbStepBtn"));
         upBtn->setFixedSize(30, 30);
         layout->addWidget(upBtn);
     }
 
     if (downBtn) {
+        downBtn->setObjectName(QStringLiteral("arbStepBtn"));
         downBtn->setFixedSize(30, 30);
         layout->addWidget(downBtn);
     }
@@ -1609,8 +1623,9 @@ void ArbWidget::onBrowseWaveform() {
 }
 
 void ArbWidget::onDownloadWaveform() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("波形下载功能待实现"));
+    const QString path = FileManagerDialog::selectFile(this, QStringLiteral("下载波形 - 选择目标位置"));
+    if (!path.isEmpty())
+        spdlog::info("ArbWidget: 下载波形到 {}", path.toStdString());
 }
 
 void ArbWidget::onRfToggle() {
@@ -1659,28 +1674,33 @@ void ArbWidget::onWaveformSelectionChanged() {
 }
 
 void ArbWidget::onNewWaveform() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("新建波形功能待实现"));
+    const QString path = FileManagerDialog::selectFile(this, QStringLiteral("新建波形 - 选择文件位置"));
+    if (!path.isEmpty())
+        spdlog::info("ArbWidget: 新建波形目标路径 {}", path.toStdString());
 }
 
 void ArbWidget::onImportWaveform() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("导入波形功能待实现"));
+    const QString path = FileManagerDialog::selectFile(this, QStringLiteral("导入波形 - 选择波形文件"));
+    if (!path.isEmpty())
+        spdlog::info("ArbWidget: 导入波形 {}", path.toStdString());
 }
 
 void ArbWidget::onEditWaveform() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("波形编辑功能待实现"));
+    const QString path = FileManagerDialog::selectFile(this, QStringLiteral("编辑波形 - 选择波形文件"));
+    if (!path.isEmpty())
+        spdlog::info("ArbWidget: 编辑波形 {}", path.toStdString());
 }
 
 void ArbWidget::onCopyWaveform() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("复制波形功能待实现"));
+    const QString path = FileManagerDialog::selectFile(this, QStringLiteral("复制波形 - 选择波形文件"));
+    if (!path.isEmpty())
+        spdlog::info("ArbWidget: 复制波形 {}", path.toStdString());
 }
 
 void ArbWidget::onDeleteWaveform() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("删除波形功能待实现"));
+    const QString path = FileManagerDialog::selectFile(this, QStringLiteral("删除波形 - 选择波形文件"));
+    if (!path.isEmpty())
+        spdlog::info("ArbWidget: 删除波形 {}", path.toStdString());
 }
 
 void ArbWidget::onPlay() {

@@ -714,6 +714,12 @@ QStatusBar::item {
     background: #e8ecf1;
 }
 
+/* 输入框旁的上下步进小按钮：与左侧输入框等高 */
+#arbParamsPanel QPushButton#arbStepBtn {
+    min-height: 20px;
+    max-height: 30px;
+}
+
 /* ====== 标签页 ====== */
 #arbTabWidget::pane {
     border: none;

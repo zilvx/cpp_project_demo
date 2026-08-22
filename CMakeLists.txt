@@ -36,7 +36,7 @@ find_package(spdlog REQUIRED)
 
 # ====== Qt6 ======
 list(PREPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt")
-find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Network QuickWidgets)
 
 # ====== Sub-libraries ======
 add_subdirectory(src/utils/logging)
@@ -63,10 +63,13 @@ add_executable(qt_table_app
     src/ui/widgets/WaveformChart.cpp
     src/ui/widgets/ArbWidget.cpp
     src/ui/widgets/FileManagerWidget.cpp
+    src/ui/widgets/FileManagerDialog.cpp
     src/ui/widgets/FiveGNrWidget.cpp
+    src/ui/core/ToastService.h
     src/ui/resources.qrc
+    src/ui/qml.qrc
 )
-target_link_libraries(qt_table_app PRIVATE Qt6::Widgets Qt6::Network spdlog::spdlog logutil_lib)
+target_link_libraries(qt_table_app PRIVATE Qt6::Widgets Qt6::Network Qt6::QuickWidgets spdlog::spdlog logutil_lib)
 # 链接 stub AGL（macOS 26+ 移除 AGL framework，Qt 仍链接它，需 -F + rpath）
 target_link_options(qt_table_app PRIVATE
     -F${CMAKE_SOURCE_DIR}/stub_frameworks
@@ -107,6 +110,8 @@ add_executable(qt_table_app_fork
     src/ui/providers/HttpDataProvider.cpp
     src/ui/widgets/WaveformChart.cpp
     src/ui/widgets/ArbWidget.cpp
+    src/ui/widgets/FileManagerWidget.cpp
+    src/ui/widgets/FileManagerDialog.cpp
     src/ui/widgets/FiveGNrWidget.cpp
     src/ui/resources.qrc
 )

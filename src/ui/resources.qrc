@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="table.qss">styles/table.qss</file>
+        <file alias="table.qss">widgets/table.qss</file>
         <file alias="keyboard_style.qss">styles/keyboard_style.qss</file>
         <file alias="scrollbar_style.qss">styles/scrollbar_style.qss</file>
         <file alias="file_manager.qss">styles/file_manager.qss</file>

@@ -19,6 +19,11 @@
 #include <memory>
 #include <map>
 #include <spdlog/spdlog.h>
+#include <QColor>
+#include <QUrl>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QtQuickWidgets/QQuickWidget>
 #include "../utils/logging/logutil.h"
 
 #include "widgets/TableWidget.h"
@@ -29,6 +34,7 @@
 #include "widgets/FiveGNrWidget.h"
 #include "core/WaveformData.h"
 #include "core/WaveformGenerator.h"
+#include "core/ToastService.h"
 #include "providers/SampleDataProvider.h"
 #include "providers/HttpDataProvider.h"
 #ifdef USE_PROTO_DATA
@@ -310,6 +316,16 @@ int main(int argc, char *argv[]) {
     tabs->addTab(new ArbWidget, QStringLiteral("ARB 任意波形"));
     tabs->addTab(new FileManagerWidget, QStringLiteral("文件管理器"));
     tabs->addTab(new FiveGNrWidget, QStringLiteral("5G NR 信号配置"));
+
+    // 数字调制 QML 界面（对应设计稿 vsg_digital modulation.html，嵌入 QQuickWidget）
+    auto *digitalModWidget = new QQuickWidget;
+    digitalModWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    digitalModWidget->setClearColor(QColor(QStringLiteral("#f0f3f7")));
+    auto *toastService = new ToastService(digitalModWidget);
+    digitalModWidget->engine()->rootContext()->setContextProperty(
+        QStringLiteral("ToastService"), toastService);
+    digitalModWidget->setSource(QUrl(QStringLiteral("qrc:/qml/VsgApp.qml")));
+    tabs->addTab(digitalModWidget, QStringLiteral("数字调制"));
     auto *window = new QWidget;
     window->setWindowTitle(QStringLiteral("Qt Demo"));
     window->resize(1050, 760);

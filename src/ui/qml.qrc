@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file alias="VsgApp.qml">qml/VsgApp.qml</file>
+        <file alias="Theme.js">qml/Theme.js</file>
+        <file alias="constellation.js">qml/constellation.js</file>
+        <file alias="components/NavItem.qml">qml/components/NavItem.qml</file>
+        <file alias="components/ToggleBtn.qml">qml/components/ToggleBtn.qml</file>
+        <file alias="components/SectionLabel.qml">qml/components/SectionLabel.qml</file>
+        <file alias="components/TextParam.qml">qml/components/TextParam.qml</file>
+        <file alias="components/ComboField.qml">qml/components/ComboField.qml</file>
+        <file alias="components/ValueChip.qml">qml/components/ValueChip.qml</file>
+        <file alias="components/InfoCard.qml">qml/components/InfoCard.qml</file>
+        <file alias="components/StatRow.qml">qml/components/StatRow.qml</file>
+        <file alias="components/ActionButton.qml">qml/components/ActionButton.qml</file>
+        <file alias="components/Constellation.qml">qml/components/Constellation.qml</file>
+        <file alias="pages/FilePage.qml">qml/pages/FilePage.qml</file>
+        <file alias="pages/GeneratorPage.qml">qml/pages/GeneratorPage.qml</file>
+        <file alias="pages/AnalogModPage.qml">qml/pages/AnalogModPage.qml</file>
+        <file alias="pages/DigitalModPage.qml">qml/pages/DigitalModPage.qml</file>
+        <file alias="pages/ExternalPage.qml">qml/pages/ExternalPage.qml</file>
+        <file alias="pages/AwgnPage.qml">qml/pages/AwgnPage.qml</file>
+    </qresource>
+</RCC>

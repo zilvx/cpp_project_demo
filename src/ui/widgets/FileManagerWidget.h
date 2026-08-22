@@ -30,6 +30,9 @@ public:
 
     QString currentPath() const { return m_currentPath; }
 
+    /// 当前选中项：若为文件则返回其绝对路径，否则返回空串
+    QString selectedFilePath() const;
+
 signals:
     /// 用户双击普通文件时发出（绝对路径）
     void fileActivated(const QString &path);

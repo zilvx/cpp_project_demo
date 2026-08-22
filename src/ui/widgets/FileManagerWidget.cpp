@@ -500,6 +500,15 @@ void FileManagerWidget::onItemSelectionChanged() {
     updateStatusBar();
 }
 
+QString FileManagerWidget::selectedFilePath() const {
+    auto *item = m_fileList->currentItem();
+    if (!item)
+        return QString();
+    if (item->data(kRoleIsDir).toBool())
+        return QString();
+    return item->data(kRolePath).toString();
+}
+
 void FileManagerWidget::onViewIcon() { setViewMode(ViewMode::Icon); }
 void FileManagerWidget::onViewList() { setViewMode(ViewMode::List); }
 void FileManagerWidget::onViewDetails() { setViewMode(ViewMode::Details); }
