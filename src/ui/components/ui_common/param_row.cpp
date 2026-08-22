@@ -1,5 +1,6 @@
 #include "param_row.h"
-#include "../styles/design_system.qss"
+#include <QLineEdit>
+#include <QAbstractSpinBox>
 
 ParamRow::ParamRow(const QString &label, QWidget *control,
                    const QString &unit, QWidget *parent)
@@ -40,7 +41,11 @@ void ParamRow::setControlStyle(bool readonly, bool error) {
     QPalette pal = m_control->palette();
 
     if (readonly) {
-        m_control->setReadOnly(true);
+        if (auto *le = qobject_cast<QLineEdit *>(m_control)) {
+            le->setReadOnly(true);
+        } else if (auto *sb = qobject_cast<QAbstractSpinBox *>(m_control)) {
+            sb->setReadOnly(true);
+        }
         m_control->setStyleSheet(R"(
             QLineEdit, QSpinBox, QDoubleSpinBox {
                 background-color: #f0f3f7;

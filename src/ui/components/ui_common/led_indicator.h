@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QColor>
+#include <QTimer>
 
 /**
  * @brief LED指示灯组件

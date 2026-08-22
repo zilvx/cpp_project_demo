@@ -6,5 +6,6 @@
         <file alias="file_manager.qss">styles/file_manager.qss</file>
         <file alias="arb_widget.qss">styles/arb_widget.qss</file>
         <file alias="five_g_nr.qss">styles/five_g_nr.qss</file>
+        <file alias="main_tabs.qss">styles/main_tabs.qss</file>
     </qresource>
 </RCC>

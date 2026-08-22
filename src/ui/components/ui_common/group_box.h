@@ -2,6 +2,8 @@
 #define GROUP_BOX_H
 
 #include <QGroupBox>
+#include <QLabel>
+#include <QColor>
 
 /**
  * @brief 带徽标的分组框

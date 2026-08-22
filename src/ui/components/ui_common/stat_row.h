@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QHBoxLayout>
 
 /**
  * @brief 统计行组件（数值 + 单位 + 标签）

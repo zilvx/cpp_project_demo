@@ -1,0 +1,36 @@
+/* ====== 主界面顶部标签页 - 对齐 ArbWidget 左侧导航栏风格 ====== */
+/* 视觉语言与 #arbNavItem 一致：透明底、主色强调条、悬停/选中淡色高亮 */
+
+QTabWidget::pane {
+    border: none;
+    background: #ffffff;
+}
+
+QTabWidget::tab-bar {
+    left: 0;
+    top: 0;
+    background: #ffffff;
+}
+
+QTabBar::tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 18px;
+    font-size: 13px;
+    color: #3a4a5a;
+    text-align: left;
+    min-width: 0;
+}
+
+QTabBar::tab:hover {
+    background: rgba(42, 111, 156, 0.04);
+    color: #3a4a5a;
+}
+
+QTabBar::tab:selected {
+    background: rgba(42, 111, 156, 0.08);
+    border-bottom: 3px solid #2a6f9c;
+    color: #0d1b2a;
+    font-weight: 500;
+}

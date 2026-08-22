@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QLabel>
 #include <QTimer>
+#include <QHBoxLayout>
+#include <functional>
 
 /**
  * @brief LCD显示屏组件（模拟设备面板显示）

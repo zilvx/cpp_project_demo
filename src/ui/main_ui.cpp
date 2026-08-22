@@ -311,6 +311,11 @@ int main(int argc, char *argv[]) {
     requestGeneration();
 
     auto *tabs = new QTabWidget;
+    QFile tabsStyle(QStringLiteral(":/main_tabs.qss"));
+    if (tabsStyle.open(QIODevice::ReadOnly))
+        tabs->setStyleSheet(QString::fromUtf8(tabsStyle.readAll()));
+    else
+        spdlog::warn("main_ui: failed to load :/main_tabs.qss");
     tabs->addTab(tablePage, QStringLiteral("人员信息表"));
     tabs->addTab(wavePage, QStringLiteral("波形示波器"));
     tabs->addTab(new ArbWidget, QStringLiteral("ARB 任意波形"));
