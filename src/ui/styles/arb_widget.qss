@@ -841,15 +841,20 @@ QStatusBar::item {
     background: #e8ecf1;
 }
 
-/* 波形列表 */
-#arbWaveformList {
+/* 波形列表：必须用 QTableWidget#id::item，否则名称等列选中/悬停不生效 */
+QTableWidget#arbWaveformList {
     border: 1px solid #e0e5ec;
     border-radius: 8px;
-    background: #fff;
+    background: #ffffff;
+    alternate-background-color: #fafbfc;
     gridline-color: #f0f3f7;
+    outline: none;
+    show-decoration-selected: 1;
+    selection-background-color: #d6e6f2;
+    selection-color: #0d1b2a;
 }
 
-#arbWaveformList QHeaderView::section {
+QTableWidget#arbWaveformList QHeaderView::section {
     background: #f0f3f7;
     padding: 8px 14px;
     font-size: 11px;
@@ -859,18 +864,25 @@ QStatusBar::item {
     border-bottom: 1px solid #e0e5ec;
 }
 
-#arbWaveformList::item {
+QTableWidget#arbWaveformList::item {
     padding: 6px 8px;
     color: #1a2a3a;
+    background: transparent;
 }
 
-#arbWaveformList::item:selected {
-    background: #e8f0f7;
+QTableWidget#arbWaveformList::item:hover {
+    background: #eef3f8;
     color: #0d1b2a;
 }
 
-#arbWaveformList::item:hover {
-    background: #f7f9fc;
+QTableWidget#arbWaveformList::item:selected {
+    background: #d6e6f2;
+    color: #0d1b2a;
+}
+
+QTableWidget#arbWaveformList::item:selected:hover {
+    background: #c5dceb;
+    color: #0d1b2a;
 }
 
 /* 波形预览区 */

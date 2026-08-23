@@ -64,6 +64,7 @@ add_executable(qt_table_app
     src/ui/widgets/ArbWidget.cpp
     src/ui/widgets/FileManagerWidget.cpp
     src/ui/widgets/FileManagerDialog.cpp
+    src/ui/widgets/BasicToolsWidget.cpp
     src/ui/widgets/FiveGNrWidget.cpp
     src/ui/core/ToastService.h
     src/ui/components/ui_common/param_row.cpp
@@ -73,6 +74,7 @@ add_executable(qt_table_app
     src/ui/components/ui_common/nav_button.cpp
     src/ui/components/ui_common/lcd_display.cpp
     src/ui/components/ui_common/keyboard_pad.cpp
+    src/ui/components/ui_common/app_header_bar.cpp
     src/ui/resources.qrc
     src/ui/qml.qrc
 )

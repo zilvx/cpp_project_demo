@@ -30,8 +30,10 @@
 #include "widgets/VirtualKeyboard.h"
 #include "widgets/WaveformChart.h"
 #include "widgets/ArbWidget.h"
+#include "widgets/BasicToolsWidget.h"
 #include "widgets/FileManagerWidget.h"
 #include "widgets/FiveGNrWidget.h"
+#include "components/ui_common/app_header_bar.h"
 #include "core/WaveformData.h"
 #include "core/WaveformGenerator.h"
 #include "core/ToastService.h"
@@ -311,16 +313,12 @@ int main(int argc, char *argv[]) {
     requestGeneration();
 
     auto *tabs = new QTabWidget;
-    QFile tabsStyle(QStringLiteral(":/main_tabs.qss"));
-    if (tabsStyle.open(QIODevice::ReadOnly))
-        tabs->setStyleSheet(QString::fromUtf8(tabsStyle.readAll()));
-    else
-        spdlog::warn("main_ui: failed to load :/main_tabs.qss");
-    tabs->addTab(tablePage, QStringLiteral("人员信息表"));
-    tabs->addTab(wavePage, QStringLiteral("波形示波器"));
-    tabs->addTab(new ArbWidget, QStringLiteral("ARB 任意波形"));
-    tabs->addTab(new FileManagerWidget, QStringLiteral("文件管理器"));
-    tabs->addTab(new FiveGNrWidget, QStringLiteral("5G NR 信号配置"));
+    auto *basicTools = new BasicToolsWidget(tablePage, wavePage, new FileManagerWidget);
+    auto *arbWidget = new ArbWidget;
+    auto *fiveGWidget = new FiveGNrWidget;
+    tabs->addTab(basicTools, QStringLiteral("基础工具"));
+    tabs->addTab(arbWidget, QStringLiteral("ARB 任意波形"));
+    tabs->addTab(fiveGWidget, QStringLiteral("5G NR 信号配置"));
 
     // 数字调制 QML 界面（对应设计稿 vsg_digital modulation.html，嵌入 QQuickWidget）
     auto *digitalModWidget = new QQuickWidget;
@@ -331,12 +329,30 @@ int main(int argc, char *argv[]) {
         QStringLiteral("ToastService"), toastService);
     digitalModWidget->setSource(QUrl(QStringLiteral("qrc:/qml/VsgApp.qml")));
     tabs->addTab(digitalModWidget, QStringLiteral("数字调制"));
+
     auto *window = new QWidget;
     window->setWindowTitle(QStringLiteral("Qt Demo"));
     window->resize(1050, 760);
+    // main_tabs.qss 含全局标题栏 + Tab 样式，需挂在 window 上才能覆盖 AppHeaderBar
+    QFile tabsStyle(QStringLiteral(":/main_tabs.qss"));
+    if (tabsStyle.open(QIODevice::ReadOnly))
+        window->setStyleSheet(QString::fromUtf8(tabsStyle.readAll()));
+    else
+        spdlog::warn("main_ui: failed to load :/main_tabs.qss");
     auto *mainLayout = new QVBoxLayout(window);
     mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->addWidget(tabs);
+
+    // 全局标题栏置于 Tab 导航栏之上（以 Arb createHeader 为基准）
+    auto *appHeader = new AppHeaderBar(window);
+    mainLayout->addWidget(appHeader);
+    mainLayout->addWidget(tabs, 1);
+
+    // 全局 RF 开关同步到 ARB 界面
+    QObject::connect(appHeader, &AppHeaderBar::rfToggled, arbWidget,
+                     &ArbWidget::setRfEnabled);
+    QObject::connect(arbWidget, &ArbWidget::rfToggled, appHeader,
+                     &AppHeaderBar::setRfEnabled);
+
     window->show();
     const int ret = app.exec();
 

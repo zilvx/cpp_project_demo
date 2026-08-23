@@ -25,7 +25,8 @@ class QTimer;
  * @brief ARB 任意波形界面 — Keysight VSG / Signal Studio 风格
  *
  * 布局对齐设计稿：
- *   标题栏(RF 开关) → 内容区(左导航 + 中央标签页 + 右前面板/侧边栏) → 底部状态栏
+ *   内容区(左导航 + 中央标签页 + 右前面板/侧边栏) → 底部状态栏
+ *   （全局标题栏由 main_ui 的 AppHeaderBar 提供）
  *   载波页：中央参数配置 + 右前面板
  *   波形/硬件/播放页：主面板 + 右侧属性栏
  */
@@ -35,6 +36,9 @@ class ArbWidget : public QWidget {
 public:
     explicit ArbWidget(QWidget *parent = nullptr);
     ~ArbWidget() override;
+
+    bool isRfEnabled() const { return m_rfEnabled; }
+    void setRfEnabled(bool enabled);
 
 signals:
     void rfToggled(bool enabled);
@@ -102,7 +106,6 @@ private:
     QFrame *makeHwCard(const QString &title, const QStringList &rows,
                        const QStringList &btnLabels) const;
 
-    QWidget *createHeader();
     QWidget *createNavPanel();
     QWidget *createFooter();
     QWidget *createCarrierPage();
@@ -150,8 +153,7 @@ private:
     bool m_playing = true;
     int m_activeTab = 0;
 
-    // ---- 顶栏 / 导航 / 状态栏 ----
-    QWidget *m_header = nullptr;           // 标题栏
+    // ---- 导航 / 状态栏 ----
     QWidget *m_navPanel = nullptr;         // 左侧导航栏
     QTabWidget *m_tabWidget = nullptr;
     QStackedWidget *m_carrierStack = nullptr;
@@ -162,7 +164,6 @@ private:
     QWidget *m_playbackSidebar = nullptr;
     QWidget *m_footer = nullptr;           // 底部状态栏
 
-    // 标题栏控件
     QLabel *m_waveformNameLabel = nullptr;  // 载波页波形文件名
     QLabel *m_statusLabel = nullptr;        // 前面板 ARB 状态
     QLabel *m_freqLabel = nullptr;
@@ -182,7 +183,6 @@ private:
     QLabel *m_footerTime = nullptr;
 
     // ---- 导航按钮 ----
-    QPushButton *m_rfToggleBtn = nullptr;  // 标题栏 RF 开关
     QList<QPushButton *> m_navBtns;        // 载波/波形/硬件/播放
     QList<QLabel *> m_navBadges;           // 导航步骤徽标（激活项蓝色高亮）
 

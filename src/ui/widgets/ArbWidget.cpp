@@ -16,12 +16,14 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QInputDialog>
+#include <QItemSelectionModel>
 #include <QLabel>
 #include <QLineEdit>
 #include <QList>
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QSpinBox>
@@ -77,16 +79,12 @@ void ArbWidget::loadStyleSheet() {
     }
 }
 
-// ====== 主布局：标题栏 + 导航栏 + 主体(左右分栏) + 底部状态栏 ======
+// ====== 主布局：导航栏 + 主体(左右分栏) + 底部状态栏（标题栏由全局 AppHeaderBar 提供） ======
 
 void ArbWidget::setupUI() {
     auto *root = new QVBoxLayout(this);
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
-
-    // 标题栏
-    m_header = createHeader();
-    root->addWidget(m_header);
 
     // 主体：左导航 / 中央标签页 / 右侧前面板·侧边栏
     auto *splitter = new QSplitter(Qt::Horizontal, this);
@@ -128,59 +126,6 @@ void ArbWidget::setupUI() {
     // 底部状态栏
     m_footer = createFooter();
     root->addWidget(m_footer);
-}
-
-// ====== 标题栏 ======
-
-QWidget *ArbWidget::createHeader() {
-    auto *header = new QWidget;
-    header->setObjectName(QStringLiteral("arbHeader"));
-    auto *lay = new QHBoxLayout(header);
-    lay->setContentsMargins(24, 12, 24, 12);
-    lay->setSpacing(12);
-
-    // Logo 区
-    auto *logoIcon = new QLabel(QStringLiteral("📶"));
-    logoIcon->setStyleSheet(QStringLiteral("font-size: 22px; color: #2a6f9c;"));
-    lay->addWidget(logoIcon);
-
-    auto *logoText = new QLabel(QStringLiteral("Signal Studio"));
-    logoText->setStyleSheet(QStringLiteral("color: #fff; font-weight: 600; font-size: 16px; letter-spacing: 0.5px;"));
-    lay->addWidget(logoText);
-
-    auto *subText = new QLabel(QStringLiteral("for VSG"));
-    subText->setStyleSheet(QStringLiteral("color: #8aaabc; font-size: 13px; font-weight: 400;"));
-    lay->addWidget(subText);
-
-    auto *badge = new QLabel(QStringLiteral("AP5041A"));
-    badge->setStyleSheet(QStringLiteral("background: #2a6f9c; color: #fff; font-size: 10px; "
-                                        "padding: 2px 10px; border-radius: 12px; font-weight: 400;"));
-    lay->addWidget(badge);
-
-    lay->addStretch();
-
-    // 连接状态
-    auto *dot = new QLabel(QStringLiteral("●"));
-    dot->setStyleSheet(QStringLiteral("color: #2ecc71; font-size: 10px;"));
-    lay->addWidget(dot);
-
-    auto *connStatus = new QLabel(QStringLiteral("已连接 · 192.168.1.100"));
-    connStatus->setStyleSheet(QStringLiteral("color: #aac; font-size: 13px;"));
-    lay->addWidget(connStatus);
-
-    // RF 输出开关（原顶部导航栏移入标题栏）
-    auto *rfLabel = new QLabel(QStringLiteral("RF 输出"));
-    rfLabel->setStyleSheet(QStringLiteral("color: #8aaabc; font-size: 12px;"));
-    lay->addWidget(rfLabel);
-
-    m_rfToggleBtn = new QPushButton(QStringLiteral("开启"));
-    m_rfToggleBtn->setObjectName(QStringLiteral("arbRfToggleBtn"));
-    m_rfToggleBtn->setCheckable(true);
-    m_rfToggleBtn->setChecked(true);
-    m_rfToggleBtn->setCursor(Qt::PointingHandCursor);
-    lay->addWidget(m_rfToggleBtn);
-
-    return header;
 }
 
 // ====== 左侧导航栏 ======
@@ -337,12 +282,6 @@ void ArbWidget::setupConnections() {
                 this, &ArbWidget::onDownloadWaveform);
     }
 
-    // 导航栏 RF 开关
-    if (m_rfToggleBtn) {
-        connect(m_rfToggleBtn, &QPushButton::clicked,
-                this, &ArbWidget::onRfToggle);
-    }
-
     // 载波页参数调整按钮（频率/功率上下、采样率上下）
     if (m_upFreqBtn) {
         connect(m_upFreqBtn, &QPushButton::clicked,
@@ -387,10 +326,12 @@ void ArbWidget::setupConnections() {
                 this, &ArbWidget::onFrontRf);
     }
 
-    // 波形页连接
+    // 波形页连接：选中行 → 同步右侧属性栏；若已有默认选中则立即刷新
     if (m_waveformTable) {
         connect(m_waveformTable, &QTableWidget::itemSelectionChanged,
                 this, &ArbWidget::onWaveformSelectionChanged);
+        if (m_waveformTable->currentRow() >= 0)
+            onWaveformSelectionChanged();
     }
 
     // 播放页连接
@@ -629,7 +570,10 @@ void ArbWidget::setupWaveformTab() {
     m_waveformTable->verticalHeader()->setVisible(false);
     m_waveformTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_waveformTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_waveformTable->setSelectionMode(QAbstractItemView::SingleSelection);
     m_waveformTable->setAlternatingRowColors(true);
+    m_waveformTable->setMouseTracking(true);
+    m_waveformTable->viewport()->setMouseTracking(true);
     m_waveformTable->verticalHeader()->setDefaultSectionSize(36);
 
     // 示例数据（对齐设计稿 5 行）
@@ -646,24 +590,43 @@ void ArbWidget::setupWaveformTab() {
     for (int i = 0; i < rows.size(); ++i) {
         const auto &r = rows[i];
 
-        // 复选框列
+        // 复选框列（含 Selectable，整行选中高亮才能覆盖第 0 列）
         auto *checkItem = new QTableWidgetItem;
-        checkItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        checkItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         checkItem->setCheckState(Qt::Unchecked);
         m_waveformTable->setItem(i, 0, checkItem);
 
-        // 名称（带图标前缀）
+        // 名称（显示带图标；UserRole 存干净名称供属性栏同步）
         auto *nameItem = new QTableWidgetItem(QStringLiteral("📶  ") + r.name);
+        nameItem->setData(Qt::UserRole, r.name);
+        nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        nameItem->setTextAlignment(Qt::AlignVCenter | Qt::AlignLeft);
         m_waveformTable->setItem(i, 1, nameItem);
 
-        m_waveformTable->setItem(i, 2, new QTableWidgetItem(r.sampleRate));
-        m_waveformTable->setItem(i, 3, new QTableWidgetItem(r.length));
+        // 采样率显示 "80 MHz"；UserRole 存数值字符串
+        QString srValue = r.sampleRate;
+        const int mhzIdx = srValue.indexOf(QStringLiteral("MHz"), 0, Qt::CaseInsensitive);
+        if (mhzIdx > 0)
+            srValue = srValue.left(mhzIdx).trimmed();
+        auto *srItem = new QTableWidgetItem(r.sampleRate);
+        srItem->setData(Qt::UserRole, srValue);
+        srItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        m_waveformTable->setItem(i, 2, srItem);
+
+        auto *lenItem = new QTableWidgetItem(r.length);
+        lenItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        m_waveformTable->setItem(i, 3, lenItem);
 
         // 状态 badge
         auto *statusItem = new QTableWidgetItem(r.status);
         statusItem->setData(Qt::UserRole, r.loaded ? QStringLiteral("loaded") : QStringLiteral("pending"));
+        statusItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_waveformTable->setItem(i, 4, statusItem);
     }
+
+    // 默认选中首行，触发属性栏同步
+    if (m_waveformTable->rowCount() > 0)
+        m_waveformTable->selectRow(0);
 
     layout->addWidget(m_waveformTable);
 
@@ -1628,21 +1591,18 @@ void ArbWidget::onDownloadWaveform() {
         spdlog::info("ArbWidget: 下载波形到 {}", path.toStdString());
 }
 
-void ArbWidget::onRfToggle() {
-    m_rfEnabled = !m_rfEnabled;
-    m_arbEnabled = m_rfEnabled && m_arbEnabled;  // 关闭RF时也关闭ARB
-
+void ArbWidget::setRfEnabled(bool enabled) {
+    if (m_rfEnabled == enabled)
+        return;
+    m_rfEnabled = enabled;
+    if (!m_rfEnabled)
+        m_arbEnabled = false;
     updateHardwareStatus();
+    emit rfToggled(m_rfEnabled);
+}
 
-    // 同步导航栏 RF 按钮
-    if (m_rfToggleBtn) {
-        m_rfToggleBtn->setChecked(m_rfEnabled);
-        m_rfToggleBtn->setText(m_rfEnabled ? QStringLiteral("开启") : QStringLiteral("关闭"));
-    }
-    // 同步前面板 RF 按钮
-    if (m_frontRfBtn) {
-        m_frontRfBtn->setChecked(m_rfEnabled);
-    }
+void ArbWidget::onRfToggle() {
+    setRfEnabled(!m_rfEnabled);
 }
 
 void ArbWidget::onFreqUp() {
@@ -1670,7 +1630,68 @@ void ArbWidget::onSampleRateDown() {
 }
 
 void ArbWidget::onWaveformSelectionChanged() {
-    // 可以在这里添加选中波形的逻辑
+    if (!m_waveformTable)
+        return;
+
+    const auto selected = m_waveformTable->selectionModel()
+                              ? m_waveformTable->selectionModel()->selectedRows()
+                              : QModelIndexList();
+    if (selected.isEmpty())
+        return;
+
+    const int row = selected.first().row();
+    auto *nameItem = m_waveformTable->item(row, 1);
+    auto *srItem = m_waveformTable->item(row, 2);
+    auto *lenItem = m_waveformTable->item(row, 3);
+    if (!nameItem || !srItem || !lenItem)
+        return;
+
+    // 优先读 UserRole 中的干净数据；无则回退解析显示文本
+    QString name = nameItem->data(Qt::UserRole).toString();
+    if (name.isEmpty()) {
+        name = nameItem->text().trimmed();
+        static const QString kIconPrefix = QStringLiteral("📶");
+        if (name.startsWith(kIconPrefix))
+            name = name.mid(kIconPrefix.size()).trimmed();
+    }
+
+    QString srText = srItem->data(Qt::UserRole).toString();
+    if (srText.isEmpty()) {
+        srText = srItem->text().trimmed();
+        const int mhzIdx = srText.indexOf(QStringLiteral("MHz"), 0, Qt::CaseInsensitive);
+        if (mhzIdx > 0)
+            srText = srText.left(mhzIdx).trimmed();
+        else
+            srText.remove(QRegularExpression(QStringLiteral("[^0-9.]")));
+    }
+
+    const QString samples = lenItem->text().trimmed();
+
+    if (m_propName)
+        m_propName->setText(name);
+    if (m_propSampleRate)
+        m_propSampleRate->setText(srText);
+    if (m_propSamples)
+        m_propSamples->setText(samples);
+
+    // 按名称启发式推断波形类型
+    if (m_propType) {
+        const QString upper = name.toUpper();
+        int typeIdx = 0; // 自定义 (ARB)
+        if (upper.contains(QStringLiteral("MULTITONE")) ||
+            (upper.contains(QStringLiteral("TONE")) && !upper.contains(QStringLiteral("BLUETOOTH"))))
+            typeIdx = 1; // 多音
+        else if (upper.contains(QStringLiteral("WLAN")) || upper.contains(QStringLiteral("LTE")) ||
+                 upper.contains(QStringLiteral("5G")) || upper.contains(QStringLiteral("NR")) ||
+                 upper.contains(QStringLiteral("BLUETOOTH")) || upper.contains(QStringLiteral("QAM")) ||
+                 upper.contains(QStringLiteral("QPSK")))
+            typeIdx = 2; // 调制
+        if (typeIdx >= 0 && typeIdx < m_propType->count())
+            m_propType->setCurrentIndex(typeIdx);
+    }
+
+    if (m_previewTitle)
+        m_previewTitle->setText(QStringLiteral("👁  波形预览: %1").arg(name));
 }
 
 void ArbWidget::onNewWaveform() {
@@ -2086,11 +2107,6 @@ void ArbWidget::updateHardwareStatus() {
         }
     }
 
-    // 同步导航栏 RF 按钮文字
-    if (m_rfToggleBtn) {
-        m_rfToggleBtn->setChecked(m_rfEnabled);
-        m_rfToggleBtn->setText(m_rfEnabled ? QStringLiteral("开启") : QStringLiteral("关闭"));
-    }
     // 同步前面板 RF 按钮
     if (m_frontRfBtn) {
         m_frontRfBtn->setChecked(m_rfEnabled);
@@ -2154,8 +2170,59 @@ void ArbWidget::onSampleRateEdited() {
 }
 
 void ArbWidget::onPlayPreview() {
-    QMessageBox::information(this, QStringLiteral("提示"),
-                             QStringLiteral("预览播放功能待实现"));
+    if (!m_previewChart)
+        return;
+
+    // 从右侧属性栏读取参数
+    const QString name = m_propName ? m_propName->text().trimmed()
+                                    : QStringLiteral("preview");
+    bool srOk = false;
+    double srMhz = m_propSampleRate ? m_propSampleRate->text().toDouble(&srOk) : 80.0;
+    if (!srOk || srMhz <= 0.0)
+        srMhz = 80.0;
+
+    bool nOk = false;
+    int samples = m_propSamples ? m_propSamples->text().toInt(&nOk) : 4096;
+    if (!nOk || samples < 16)
+        samples = 4096;
+    constexpr int kMaxPreviewPts = 4096;
+    if (samples > kMaxPreviewPts)
+        samples = kMaxPreviewPts;
+
+    const int typeIdx = m_propType ? m_propType->currentIndex() : 0;
+
+    // 数值映射：采样率 MHz 数值 → fs；点数 ≈ samples，约 kCycles 个周期
+    // 横轴单位与图表标签「时间 (μs)」一致（1 单位 = 1 μs）
+    constexpr int kCycles = 4;
+    constexpr double kAmp = 1.0;
+    const double fs = srMhz;
+    const double f = (kCycles * fs) / static_cast<double>(samples);
+    const double duration = static_cast<double>(samples) / fs;
+
+    WaveformData data;
+    switch (typeIdx) {
+    case 1: // 多音：扫频近似多音时域形态
+        data.generateSweep(f, f * 5.0, kAmp, fs, duration, 0.0, 0.0);
+        break;
+    case 2: // 调制：方波近似数字调制包络边沿
+        data.generateSquare(f, kAmp, fs, kCycles, 0.02);
+        break;
+    default: // 自定义 ARB：正弦
+        data.generateSine(f, kAmp, fs, kCycles, 0.0, 0.0);
+        break;
+    }
+
+    if (data.isEmpty()) {
+        spdlog::warn("ArbWidget: 预览波形生成失败 name={}", name.toStdString());
+        return;
+    }
+
+    m_previewChart->setData(data);
+    if (m_previewTitle)
+        m_previewTitle->setText(QStringLiteral("👁  波形预览: %1").arg(name));
+
+    spdlog::info("ArbWidget: 预览播放 name={} type={} sr={}MHz samples={}",
+                 name.toStdString(), typeIdx, srMhz, samples);
 }
 
 void ArbWidget::onNavClicked() {

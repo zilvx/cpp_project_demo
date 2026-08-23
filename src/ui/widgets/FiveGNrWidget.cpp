@@ -62,16 +62,12 @@ void FiveGNrWidget::loadStyleSheet() {
     }
 }
 
-// ====== 主布局：标题栏 + Apps 栏 + 三栏主体 + 底部状态栏 ======
+// ====== 主布局：Apps 栏 + 三栏主体 + 底部状态栏（标题栏由全局 AppHeaderBar 提供） ======
 
 void FiveGNrWidget::setupUI() {
     auto *root = new QVBoxLayout(this);
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
-
-    // 顶部标题栏
-    m_header = createHeader();
-    root->addWidget(m_header);
 
     // Apps 菜单栏
     m_appsBar = createAppsBar();
@@ -94,54 +90,6 @@ void FiveGNrWidget::setupUI() {
     // 底部状态栏
     m_footer = createFooter();
     root->addWidget(m_footer);
-}
-
-// ====== 顶部标题栏 ======
-
-QWidget *FiveGNrWidget::createHeader() {
-    auto *header = new QWidget;
-    header->setObjectName(QStringLiteral("fgHeader"));
-    auto *lay = new QHBoxLayout(header);
-    lay->setContentsMargins(24, 12, 24, 12);
-    lay->setSpacing(12);
-
-    // Logo 区
-    auto *logoIcon = new QLabel(QStringLiteral("📶"));
-    logoIcon->setObjectName(QStringLiteral("fgLogoIcon"));
-    lay->addWidget(logoIcon);
-
-    auto *logoText = new QLabel(QStringLiteral("Signal Studio"));
-    logoText->setObjectName(QStringLiteral("fgLogoText"));
-    lay->addWidget(logoText);
-
-    auto *subText = new QLabel(QStringLiteral("for 5G NR"));
-    subText->setObjectName(QStringLiteral("fgLogoSub"));
-    lay->addWidget(subText);
-
-    auto *badge = new QLabel(QStringLiteral("M9484C VXG"));
-    badge->setObjectName(QStringLiteral("fgModelBadge"));
-    lay->addWidget(badge);
-
-    auto *appIcon = new QLabel(QStringLiteral("5G NR"));
-    appIcon->setObjectName(QStringLiteral("fgAppIcon"));
-    lay->addWidget(appIcon);
-
-    lay->addStretch();
-
-    // 连接状态
-    auto *dot = new QLabel(QStringLiteral("●"));
-    dot->setObjectName(QStringLiteral("fgConnDot"));
-    lay->addWidget(dot);
-
-    auto *connStatus = new QLabel(QStringLiteral("已连接 · 192.168.1.100"));
-    connStatus->setObjectName(QStringLiteral("fgConnText"));
-    lay->addWidget(connStatus);
-
-    auto *fwInfo = new QLabel(QStringLiteral("| 固件 v4.0.1"));
-    fwInfo->setObjectName(QStringLiteral("fgFwText"));
-    lay->addWidget(fwInfo);
-
-    return header;
 }
 
 // ====== Apps 菜单栏 ======

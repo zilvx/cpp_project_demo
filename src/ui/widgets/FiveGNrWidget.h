@@ -18,8 +18,9 @@ class QStackedWidget;
  * @brief 5G NR 信号配置界面 — Keysight Signal Studio for 5G NR (M9484C VXG) 风格
  *
  * 布局对齐设计稿：
- *   顶部标题栏 → Apps 菜单栏(5G NR/WLAN/LTE/... + RF) →
+ *   Apps 菜单栏(5G NR/WLAN/LTE/... + RF) →
  *   三栏主体(左导航 / 中参数配置 / 右辅助面板) → 底部状态栏
+ *   （全局标题栏由 main_ui 的 AppHeaderBar 提供）
  *   左导航 4 个配置步骤：载波(Carrier) / BWP / 用户(UE) / 路由(Routing)
  */
 class FiveGNrWidget : public QWidget {
@@ -47,7 +48,6 @@ private:
     void setupConnections();
 
     // 容器构建
-    QWidget *createHeader();
     QWidget *createAppsBar();
     QWidget *createNavPanel();
     QWidget *createConfigPanel();
@@ -71,8 +71,7 @@ private:
     void updateSignalStatus();
     void applyPreset(const QString &preset);
 
-    // ===== 顶栏 / 导航 / 状态栏 =====
-    QWidget *m_header = nullptr;
+    // ===== Apps / 导航 / 状态栏 =====
     QWidget *m_appsBar = nullptr;
     QSplitter *m_mainSplitter = nullptr;
     QWidget *m_footer = nullptr;

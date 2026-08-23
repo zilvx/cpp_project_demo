@@ -1,6 +1,78 @@
 /* ====== 主界面顶部标签页 - 对齐 ArbWidget 左侧导航栏风格 ====== */
 /* 视觉语言与 #arbNavItem 一致：透明底、主色强调条、悬停/选中淡色高亮 */
 
+/* ====== 全局标题栏（Arb createHeader 基准，置于 Tab 之上） ====== */
+#appHeaderBar {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #1a2a3a, stop:1 #0d1b2a);
+    border-bottom: 2px solid #2a6f9c;
+}
+
+#appHeaderLogoIcon {
+    font-size: 22px;
+    color: #2a6f9c;
+}
+
+#appHeaderLogoText {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+#appHeaderLogoSub {
+    color: #8aaabc;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+#appHeaderBadge {
+    background: #2a6f9c;
+    color: #ffffff;
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 400;
+}
+
+#appHeaderConnDot {
+    color: #2ecc71;
+    font-size: 10px;
+}
+
+#appHeaderConnText {
+    color: #aac;
+    font-size: 13px;
+}
+
+#appHeaderRfLabel {
+    color: #8aaabc;
+    font-size: 12px;
+}
+
+#appHeaderRfToggleBtn {
+    background: #2ecc71;
+    color: #fff;
+    border: none;
+    padding: 4px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 60px;
+}
+
+#appHeaderRfToggleBtn:!checked {
+    background: #e74c3c;
+}
+
+#appHeaderRfToggleBtn:hover {
+    background: #27ae60;
+}
+
+#appHeaderRfToggleBtn:!checked:hover {
+    background: #c0392b;
+}
+
 QTabWidget::pane {
     border: none;
     background: #ffffff;
